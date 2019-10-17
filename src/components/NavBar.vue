@@ -1,6 +1,5 @@
 <template>
 	<ul>
-		<li><a>Accueil</a></li>
 		<li><a>Films</a></li>
 		<li><a>Acteurs</a></li>
 		<li><a>A propos de Polywood</a></li>
@@ -17,27 +16,27 @@ export default {
 @import "../assets/colors";
 
 ul {
+	width: 100%;
+	text-align: center;
 	list-style-type: none;
-	margin: 0 20%;
 	padding: 0;
 	overflow: hidden;
 	background-color: $primaryColor;
 }
 
 li {
-	float: left;
-}
-
-li a {
-	display: block;
-	color: white;
+	width: 200px;
 	padding: 14px 16px;
-	text-align: center;
-	text-decoration: none;
+	display: inline-block;
 	cursor: pointer;
 }
 
-li a:hover {
+li a {
+	text-align: center;
+	text-decoration: none;
+}
+
+li:hover {
 	background-color: $primaryDarkColor;
 }
 

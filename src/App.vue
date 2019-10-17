@@ -1,6 +1,6 @@
 <template>
 	<div id="app">
-		<PolywoodBanner />
+		<PolywoodBanner :enable-parallax="false" />
 		<NavBar />
 
 		<p>

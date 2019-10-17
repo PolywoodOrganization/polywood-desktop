@@ -1,3 +1,10 @@
+@import url("https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300&display=swap");
+/* 'Open Sans Condensed' */
+* {
+  font-family: "Open Sans Condensed", Helvetica, Verdana, Arial, sans-serif;
+  color: white;
+}
+
 html body {
   width: 100%;
   margin: 0;
@@ -5,15 +12,10 @@ html body {
 
 body {
   background-color: #0B4167;
-  color: white;
 }
 
 h1, h2, h3, h4, h5, h6 {
   color: #DEE199;
-}
-
-p {
-  color: white;
 }
 
 /*# sourceMappingURL=style.css.map */

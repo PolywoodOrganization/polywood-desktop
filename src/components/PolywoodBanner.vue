@@ -14,6 +14,10 @@ export default {
 		factor: {
 			default: 0.25,
 			type: Number
+		},
+		enableParallax: {
+			default: true,
+			type: Boolean
 		}
 	},
 	data() {
@@ -52,7 +56,10 @@ export default {
 	},
 	computed: {
 		offset() {
-			return this.parallax.scrollFactor * this.parallax.height * this.factor - 75;
+			if (this.enableParallax)
+				return this.parallax.scrollFactor * this.parallax.height * this.factor - 75;
+			else
+				return 0;
 		}
 	}
 };

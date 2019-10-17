@@ -1,4 +1,10 @@
 @import 'colors';
+@import 'fonts';
+
+* {
+	font-family: "Open Sans Condensed", Helvetica, Verdana, Arial, sans-serif;
+	color: white;
+}
 
 html {
 	body {
@@ -9,13 +15,8 @@ html {
 
 body {
 	background-color: $primaryColor;
-	color: white;
 }
 
 h1, h2, h3, h4, h5, h6 {
 	color: $h1Color
-}
-
-p {
-	color: white;
 }
