@@ -1,14 +1,19 @@
 <template>
 	<ul>
-		<li><a>Films</a></li>
-		<li><a>Acteurs</a></li>
-		<li><a>A propos de Polywood</a></li>
+		<li @click="onNavClicked(0)" :class="{active: this.$store.getters.navigationId === 0}">Films</li>
+		<li @click="onNavClicked(1)" :class="{active: this.$store.getters.navigationId === 1}">Acteurs</li>
+		<li @click="onNavClicked(2)" :class="{active: this.$store.getters.navigationId === 2}">A propos de Polywood</li>
 	</ul>
 </template>
 
 <script>
 export default {
 	name: "NavBar",
+	methods: {
+		onNavClicked(index) {
+			this.$store.dispatch("onNavigationIdChanged", index);
+		},
+	},
 };
 </script>
 
@@ -41,6 +46,9 @@ li:hover {
 }
 
 .active {
-	background-color: #4CAF50;
+	background-color: #5574A0;
+}
+.active:hover {
+	background-color: #456187;
 }
 </style>
