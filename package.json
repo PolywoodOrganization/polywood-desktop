@@ -55,6 +55,6 @@
 		"tabWidth": 4,
 		"semi": true,
 		"singleQuote": false,
-		"printWidth": 80
+		"printWidth": 120
 	}
 }

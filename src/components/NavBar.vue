@@ -18,7 +18,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import "../assets/colors";
+@import "../assets/css/colors";
 
 ul {
 	width: 100%;
