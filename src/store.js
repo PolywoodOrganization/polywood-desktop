@@ -110,7 +110,50 @@ export const state = {
 		},
 	],
 
-	actors: [],
+	actors: [
+		{
+			id: 1,
+			name: "Acteur 1",
+			moviecount: 25,
+			rating: 4,
+			googlehits: 580,
+		},
+		{
+			id: 2,
+			name: "Acteur 2",
+			moviecount: 12,
+			rating: 2,
+			googlehits: 0,
+		},
+		{
+			id: 3,
+			name: "Acteur 3",
+			moviecount: 102,
+			rating: 7,
+			googlehits: 15890,
+		},
+		{
+			id: 4,
+			name: "",
+			moviecount: 0,
+			rating: 0,
+			googlehits: 0,
+		},
+		{
+			id: 5,
+			name: "",
+			moviecount: 0,
+			rating: 0,
+			googlehits: 0,
+		},
+		{
+			id: 6,
+			name: "",
+			moviecount: 0,
+			rating: 0,
+			googlehits: 0,
+		},
+	],
 };
 
 export const getters = {
