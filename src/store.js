@@ -1,7 +1,22 @@
 export const state = {
+	/**
+	 * 0: MoviesContainer
+	 * 1: ActorsContainer
+	 * 2: AboutUsContainer
+	 */
 	navigationId: 0,
+
 	searchValue: "",
+
+	/**
+	 * 0: Sort alphabetic
+	 * 1: Sort release year
+	 * 2: Sort movie count
+	 * 3: Sort rating
+	 * 4: Sort google hits
+	 */
 	sortingMethod: 0,
+
 	movies: [
 		{
 			id: "1",
@@ -94,6 +109,7 @@ export const state = {
 			directors: "",
 		},
 	],
+
 	actors: [],
 };
 
@@ -108,9 +124,12 @@ export const getters = {
 		return state.sortingMethod;
 	},
 	movies(state) {
-		if (state.searchValue === "") return state.movies;
+		let list = null;
+
+		// Filter according to searchValue
+		if (state.searchValue === "") list = state.movies;
 		else
-			return state.movies.filter(movie => {
+			list = state.movies.filter(movie => {
 				return (
 					movie.title.toLowerCase().includes(state.searchValue.toLowerCase()) ||
 					movie.releaseyear
@@ -139,9 +158,47 @@ export const getters = {
 						.includes(state.searchValue.toLowerCase())
 				);
 			});
+
+		// Sort according to sortingMethod
+		// Sort alphabetically
+		if (state.sortingMethod === 0) list = list.sort();
+		// Sort by release year
+		else if (state.sortingMethod === 1)
+			list = list.sort((a, b) => {
+				return a.releaseyear - b.releaseyear;
+			});
+
+		return list;
 	},
 	actors(state) {
-		return state.actors;
+		let list = null;
+
+		// Filter according to searchValue
+		if (state.searchValue === "") list = state.actors;
+		else
+			list = state.actors.filter(movie => {
+				return movie.name.toLowerCase().includes(state.searchValue.toLowerCase());
+			});
+
+		// Sort according to sortingMethod
+		// Sort alphabetically
+		if (state.sortingMethod === 0) list = list.sort();
+		else if (state.sortingMethod === 2)
+			list = list.sort((a, b) => {
+				return a.moviecount - b.moviecount;
+			});
+		// Sort by rating
+		else if (state.sortingMethod === 3)
+			list = list.sort((a, b) => {
+				return a.rating - b.rating;
+			});
+		// Sort by google hits
+		else if (state.sortingMethod === 4)
+			list = list.sort((a, b) => {
+				return a.googlehits - b.googlehits;
+			});
+
+		return list;
 	},
 };
 

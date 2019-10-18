@@ -5,7 +5,9 @@
 			<select class="form-control col-3" @change="onSortingFieldChanged">
 				<option>Ranger dans l'ordre alphabétique</option>
 				<option v-if="this.$store.getters.navigationId === 0">Ranger par date de sortie</option>
-				<option v-if="this.$store.getters.navigationId === 1">Ranger par date de naissance</option>
+				<option v-if="this.$store.getters.navigationId === 1">Ranger par nombre de films</option>
+				<option v-if="this.$store.getters.navigationId === 1">Ranger par note</option>
+				<option v-if="this.$store.getters.navigationId === 1">Ranger par Google hits</option>
 			</select>
 			<input type="reset" class="btn btn-outline-primary col-1" value="Effacer"/>
 		</form>
