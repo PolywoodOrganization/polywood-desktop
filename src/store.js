@@ -17,6 +17,12 @@ export const state = {
 	 */
 	sortingMethod: 0,
 
+	/**
+	 * 0: Ascending
+	 * 1: Descending
+	 */
+	sortingOrder: 0,
+
 	movies: [
 		{
 			id: "1",
@@ -167,6 +173,9 @@ export const getters = {
 				return a.releaseyear - b.releaseyear;
 			});
 
+		// If order is "Descending"
+		if (state.sortingOrder === 1) list.reverse();
+
 		return list;
 	},
 	actors(state) {
@@ -197,6 +206,9 @@ export const getters = {
 				return a.googlehits - b.googlehits;
 			});
 
+		// If order is "Descending"
+		if (state.sortingOrder === 1) list.reverse();
+
 		return list;
 	},
 };
@@ -208,8 +220,11 @@ export const actions = {
 	onSearchValueChanged(toolkit, payload) {
 		toolkit.commit("setSearchValue", payload);
 	},
-	onSortingMethod(toolkit, payload) {
+	onSortingMethodChanged(toolkit, payload) {
 		toolkit.commit("setSortingMethod", payload);
+	},
+	onSortingOrderChanged(toolkit, payload) {
+		toolkit.commit("setSortingOrder", payload);
 	},
 	// fetchMovies(toolkit, _) {
 	// 	throw new Error("Not implemented");
@@ -234,6 +249,9 @@ export const mutations = {
 	},
 	setSortingMethod(state, payload) {
 		state.sortingMethod = payload;
+	},
+	setSortingOrder(state, payload) {
+		state.sortingOrder = payload;
 	},
 	setMovies(state, payload) {
 		state.movies = payload;
