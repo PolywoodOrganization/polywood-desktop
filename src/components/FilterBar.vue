@@ -4,12 +4,12 @@
 			<input type="text" class="form-control col-4 offset-2" placeholder="Rechercher" @input="onSearchFieldChanged"/>
 			<select class="form-control col-3" @change="onSortingFieldChanged">
 				<option>Ranger dans l'ordre alphabétique</option>
-				<option v-if="this.$store.getters.navigationId === 0">Ranger par date de sortie</option>
-				<option v-if="this.$store.getters.navigationId === 1">Ranger par nombre de films</option>
-				<option v-if="this.$store.getters.navigationId === 1">Ranger par note</option>
-				<option v-if="this.$store.getters.navigationId === 1">Ranger par Google hits</option>
+				<option v-if="this.$store.getters.navigationId === 0" value="0">Ranger par date de sortie</option>
+				<option v-if="this.$store.getters.navigationId === 1" value="1">Ranger par nombre de films</option>
+				<option v-if="this.$store.getters.navigationId === 1" value="2">Ranger par note</option>
+				<option v-if="this.$store.getters.navigationId === 1" value="3">Ranger par Google hits</option>
 			</select>
-			<input type="reset" class="btn btn-outline-primary col-1" value="Effacer"/>
+			<input type="reset" class="btn btn-outline-primary col-1" value="Effacer" @click="onResetClicked"/>
 		</form>
 	</div>
 </template>
@@ -22,8 +22,11 @@ export default {
 			this.$store.dispatch("onSearchValueChanged", event.target.value);
 		},
 		onSortingFieldChanged(event) {
-			this.$store.dispatch("onSortingMethod", event.target.value);
+			this.$store.dispatch("onSortingMethod", parseInt(event.target.value));
 		},
+		onResetClicked() {
+			this.$store.dispatch("onSearchValueChanged", "");
+		}
 	}
 };
 </script>

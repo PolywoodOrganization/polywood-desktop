@@ -4,16 +4,20 @@
 			<Movie class="movie" v-for="movie in this.$store.getters.movies" v-bind="movie" :key="movie.id"/>
 		</div>
 		<div class="row justify-content-center" v-else>
-			<p>Aucun film trouvé 😕</p>
+			<Card additional-card-class="border-warning bg-warning empty-movie" title="Aucun film trouvé 😕">
+				<img src="../assets/img/clapper.png" alt="Aucun film disponible" title="Aucun film disponible"/>
+			</Card>
 		</div>
 	</div>
 </template>
 
 <script>
 import Movie from "./Movie";
+import Card from "./Card";
+
 export default {
 	name: "MoviesContainer",
-	components: { Movie },
+	components: { Movie, Card },
 };
 </script>
 

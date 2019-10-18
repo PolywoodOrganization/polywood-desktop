@@ -78,36 +78,6 @@ export const state = {
 			actors: "",
 			directors: "",
 		},
-		{
-			id: "7",
-			title: "",
-			releaseyear: "",
-			releasedate: "",
-			genre: "",
-			writer: "",
-			actors: "",
-			directors: "",
-		},
-		{
-			id: "8",
-			title: "",
-			releaseyear: "",
-			releasedate: "",
-			genre: "",
-			writer: "",
-			actors: "",
-			directors: "",
-		},
-		{
-			id: "9",
-			title: "",
-			releaseyear: "",
-			releasedate: "",
-			genre: "",
-			writer: "",
-			actors: "",
-			directors: "",
-		},
 	],
 
 	actors: [
@@ -134,21 +104,7 @@ export const state = {
 		},
 		{
 			id: 4,
-			name: "",
-			moviecount: 0,
-			rating: 0,
-			googlehits: 0,
-		},
-		{
-			id: 5,
-			name: "",
-			moviecount: 0,
-			rating: 0,
-			googlehits: 0,
-		},
-		{
-			id: 6,
-			name: "",
+			name: "Acteur 4",
 			moviecount: 0,
 			rating: 0,
 			googlehits: 0,
@@ -253,7 +209,7 @@ export const actions = {
 		toolkit.commit("setSearchValue", payload);
 	},
 	onSortingMethod(toolkit, payload) {
-		toolkit.commit(toolkit, payload);
+		toolkit.commit("setSortingMethod", payload);
 	},
 	// fetchMovies(toolkit, _) {
 	// 	throw new Error("Not implemented");
