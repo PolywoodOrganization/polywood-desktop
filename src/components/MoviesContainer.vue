@@ -1,15 +1,10 @@
 <template>
 	<div class="container movies-container">
-		<div class="row justify-content-center">
-			<Movie class="movie" title="Test 1" />
-			<Movie class="movie" title="Test 2" />
-			<Movie class="movie" title="Test 3" />
-			<Movie class="movie" title="Test 4" />
-			<Movie class="movie" title="Test 5" />
-			<Movie class="movie" title="Test 6" />
-			<Movie class="movie" />
-			<Movie class="movie" />
-			<Movie class="movie" />
+		<div class="row justify-content-center" v-if="this.$store.getters.movies.length !== 0">
+			<Movie class="movie" v-for="movie in this.$store.getters.movies" v-bind="movie" :key="movie.id"/>
+		</div>
+		<div class="row justify-content-center" v-else>
+			<p>Aucun film trouvé 😕</p>
 		</div>
 	</div>
 </template>

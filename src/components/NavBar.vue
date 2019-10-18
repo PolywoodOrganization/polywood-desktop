@@ -34,6 +34,7 @@ li {
 	padding: 14px 16px;
 	display: inline-block;
 	cursor: pointer;
+	transition: all ease-in .2s;
 }
 
 li a {
@@ -46,7 +47,8 @@ li:hover {
 }
 
 .active {
-	background-color: #5574A0;
+	background-color: var(--blue);
+	transition: all ease-in .2s;
 }
 .active:hover {
 	background-color: #456187;

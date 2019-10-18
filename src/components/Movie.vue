@@ -1,5 +1,5 @@
 <template>
-	<div class="card border-secondary col-lg-3 col-md-2 col-sm-2 col-xs-2" v-if="title !== ''">
+	<div class="card border-secondary shadow-sm col-lg-3 col-md-2" v-if="title !== ''" @mouseover="isHoveringCard = true" @mouseout="isHoveringCard = false" :class="{shadow: isHoveringCard}">
 		<div class="card-header">{{title}}</div>
 		<div class="card-body">
 			<p class="card-text">Release: {{releaseyear}}</p>
@@ -8,7 +8,7 @@
 			<p class="card-text">Directors: {{directors}}</p>
 		</div>
 	</div>
-	<div class="card border-danger col-lg-3 col-md-2 col-sm-2 col-xs-2 empty-movie" v-else>
+	<div class="card border-warning bg-warning shadow-sm col-lg-3 col-md-2 col-sm-2 col-xs-2 empty-movie"  v-else  @mouseover="isHoveringCard = true" @mouseout="isHoveringCard = false" :class="{shadow: isHoveringCard}">
 		<div class="card-body">
 			<img src="../assets/img/clapper.png" alt="Aucun film disponible" title="Aucun film disponible"/>
 		</div>
@@ -18,13 +18,18 @@
 <script>
 	export default {
 		name: "Movie",
+		data() {
+			return {
+				isHoveringCard: false,
+			};
+		},
 		props: {
 			id: {
 				type: String,
 			},
 			title: {
 				type: String,
-				default: "",
+				default: '',
 			},
 			releaseyear: {
 				type: Number,
@@ -54,6 +59,7 @@
 .card {
 	margin: 10px;
 	padding: 0;
+	transition: all ease-in .2s;
 }
 
 .card-header {
@@ -72,7 +78,4 @@
 	height: 100%;
 }
 
-.card.empty-movie {
-	background-color: $accentColor;
-}
 </style>
