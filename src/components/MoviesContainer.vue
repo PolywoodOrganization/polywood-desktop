@@ -17,6 +17,9 @@ import Card from "./Card";
 
 export default {
 	name: "MoviesContainer",
+	created() {
+		this.$store.dispatch("fetchMovies");
+	},
 	components: { Movie, Card },
 };
 </script>

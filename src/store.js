@@ -27,7 +27,7 @@ export const state = {
 		{
 			id: "1",
 			title: "Title 1",
-			releaseyear: "",
+			releaseyear: 0,
 			releasedate: "",
 			genre: "",
 			writer: "",
@@ -37,7 +37,7 @@ export const state = {
 		{
 			id: "2",
 			title: "Title 2",
-			releaseyear: "",
+			releaseyear: 0,
 			releasedate: "",
 			genre: "",
 			writer: "",
@@ -47,7 +47,7 @@ export const state = {
 		{
 			id: "3",
 			title: "Title 3",
-			releaseyear: "",
+			releaseyear: 0,
 			releasedate: "",
 			genre: "",
 			writer: "",
@@ -57,7 +57,7 @@ export const state = {
 		{
 			id: "4",
 			title: "Title 4",
-			releaseyear: "",
+			releaseyear: 0,
 			releasedate: "",
 			genre: "",
 			writer: "",
@@ -67,7 +67,7 @@ export const state = {
 		{
 			id: "5",
 			title: "Title 5",
-			releaseyear: "",
+			releaseyear: 0,
 			releasedate: "",
 			genre: "",
 			writer: "",
@@ -77,7 +77,7 @@ export const state = {
 		{
 			id: "6",
 			title: "Title 6",
-			releaseyear: "",
+			releaseyear: 0,
 			releasedate: "",
 			genre: "",
 			writer: "",
@@ -226,9 +226,23 @@ export const actions = {
 	onSortingOrderChanged(toolkit, payload) {
 		toolkit.commit("setSortingOrder", payload);
 	},
-	// fetchMovies(toolkit, _) {
-	// 	throw new Error("Not implemented");
-	// },
+	fetchMovies(toolkit) {
+		fetch("http://localhost:8081/movies")
+			.then(response => response.json())
+			.then(movie_entries => {
+				return movie_entries.map(movie_entry => ({
+					id: movie_entry.movieid,
+					title: movie_entry.title,
+					releaseyear: movie_entry.releaseyear,
+					releasedate: movie_entry.releasedate,
+					genre: movie_entry.genre,
+					writer: movie_entry.writer,
+					actors: movie_entry.actors,
+					directors: movie_entry.directors,
+				}));
+			})
+			.then(movies => toolkit.commit("setMovies", movies));
+	},
 	onMoviesChanged(toolkit, payload) {
 		toolkit.commit("setMovies", payload);
 	},

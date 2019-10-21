@@ -33,6 +33,8 @@ export default {
 		},
 		onResetClicked() {
 			this.$store.dispatch("onSearchValueChanged", "");
+			this.$store.dispatch("onSortingMethodChanged", 0);
+			this.$store.dispatch("onSortingOrderChanged", 0);
 		}
 	}
 };

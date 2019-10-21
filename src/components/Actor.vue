@@ -38,7 +38,7 @@ export default {
 		googlehits: {
 			type: Number,
 		},
-	}
+	},
 };
 </script>
 
