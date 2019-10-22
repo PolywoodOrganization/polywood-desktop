@@ -37,7 +37,7 @@
 		],
 		"rules": {
 			"no-console": "off",
-			"no-unused-vars": ["error", { "args": "none" }]
+			"no-unused-vars": "off"
 		},
 		"parserOptions": {
 			"parser": "babel-eslint"

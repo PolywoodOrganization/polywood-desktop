@@ -1,3 +1,12 @@
+async function getImageUrl(movie) {
+	fetch(`http://localhost:8081/movies/image/${movie["id"]}`)
+		.then(response => response.text())
+		.then(url => {
+			movie["cover"] = url;
+			return null;
+		});
+}
+
 export const state = {
 	/**
 	 * 0: MoviesContainer
@@ -230,16 +239,21 @@ export const actions = {
 		fetch("http://localhost:8081/movies")
 			.then(response => response.json())
 			.then(movie_entries => {
-				return movie_entries.map(movie_entry => ({
-					id: movie_entry.movieid,
-					title: movie_entry.title,
-					releaseyear: parseInt(movie_entry.releaseyear),
-					releasedate: movie_entry.releasedate,
-					genre: movie_entry.genre,
-					writer: movie_entry.writer,
-					actors: movie_entry.actors,
-					directors: movie_entry.directors,
-				}));
+				return movie_entries.map(movie_entry => {
+					let movie = {
+						id: movie_entry.movieid,
+						title: movie_entry.title,
+						cover: "",
+						releaseyear: parseInt(movie_entry.releaseyear),
+						releasedate: movie_entry.releasedate,
+						genre: movie_entry.genre,
+						writer: movie_entry.writer,
+						actors: movie_entry.actors,
+						directors: movie_entry.directors,
+					};
+					getImageUrl(movie);
+					return movie;
+				});
 			})
 			.then(movies => toolkit.commit("setMovies", movies));
 	},
