@@ -1,5 +1,5 @@
 <template>
-	<Card v-if="title !== ''" :title="title">
+	<Card v-if="title !== ''" :title="title" cover="https://m.media-amazon.com/images/M/MV5BNDJmMWIwY2EtNWE1NS00NDQ0LTliODYtZTczZmY0MDVmNGIxXkEyXkFqcGdeQXVyODE5NzE3OTE@._V1_UY268_CR8,0,182,268_AL_.jpg">
 		<p class="card-text"><b>Genre :</b> <span v-html="parseGenre"></span></p>
 		<p class="card-text"><b>Sortie :</b> {{releaseyear}}</p>
 		<p class="card-text"><b>Acteurs :</b> <span v-html="parseActors"></span></p>
