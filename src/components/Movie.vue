@@ -1,9 +1,9 @@
 <template>
-	<Card v-if="title !== ''" :title="title">
+	<Card v-if="title !== ''" :title="title" :cover="cover">
 		<p class="card-text"><b>Genre :</b> <span v-html="parseGenre"></span></p>
 		<p class="card-text"><b>Sortie :</b> {{releaseyear}}</p>
 		<p class="card-text"><b>Acteurs :</b> <span v-html="parseActors"></span></p>
-		<p class="card-text"><b>Directeurs :</b> {{directors}}</p>
+		<p class="card-text"><b>Directeurs :</b> <span v-html="parseDirectors"></span></p>
 	</Card>
 	<Card v-else additional-card-class="border-warning bg-warning empty-movie">
 		<img src="../assets/img/clapper.png" alt="Aucun film disponible" title="Aucun film disponible"/>
@@ -56,6 +56,10 @@ export default {
 			type: String,
 			default: '',
 		},
+		cover: {
+			type: String,
+			default: '',
+		},
 		releaseyear: {
 			type: Number,
 		},
@@ -77,11 +81,14 @@ export default {
 	},
 	computed: {
 		parseActors() {
-			return this.actors.replace(/ \| /g, ", ");
+			return this.actors.replace(/\s*\|\s*/g, ", ");
+		},
+		parseDirectors() {
+			return this.directors.replace(/\s*\|\s*/g, ", ");
 		},
 		parseGenre() {
 			let html = '';
-			this.genre.split(" | ").forEach(g => {
+			this.genre.split(/\s*\|\s*/).forEach(g => {
 				html += `<span class="badge badge-${getGenreColorType(g)} badge-genre">${g}</span>`
 			});
 			return html;

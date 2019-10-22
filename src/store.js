@@ -1,3 +1,17 @@
+async function getImageUrl(movie) {
+	fetch(`http://localhost:8081/movies/image/${movie["id"]}`)
+		.then(response => response.text())
+		.then(url => {
+			movie["cover"] = url;
+			return null;
+		});
+}
+
+/**
+ * Boolean that indicates if the movies are already fetched
+ */
+let moviesFetched = false;
+
 export const state = {
 	/**
 	 * 0: MoviesContainer
@@ -23,68 +37,7 @@ export const state = {
 	 */
 	sortingOrder: 0,
 
-	movies: [
-		{
-			id: "1",
-			title: "Title 1",
-			releaseyear: 0,
-			releasedate: "",
-			genre: "",
-			writer: "",
-			actors: "",
-			directors: "",
-		},
-		{
-			id: "2",
-			title: "Title 2",
-			releaseyear: 0,
-			releasedate: "",
-			genre: "",
-			writer: "",
-			actors: "",
-			directors: "",
-		},
-		{
-			id: "3",
-			title: "Title 3",
-			releaseyear: 0,
-			releasedate: "",
-			genre: "",
-			writer: "",
-			actors: "",
-			directors: "",
-		},
-		{
-			id: "4",
-			title: "Title 4",
-			releaseyear: 0,
-			releasedate: "",
-			genre: "",
-			writer: "",
-			actors: "",
-			directors: "",
-		},
-		{
-			id: "5",
-			title: "Title 5",
-			releaseyear: 0,
-			releasedate: "",
-			genre: "",
-			writer: "",
-			actors: "",
-			directors: "",
-		},
-		{
-			id: "6",
-			title: "Title 6",
-			releaseyear: 0,
-			releasedate: "",
-			genre: "",
-			writer: "",
-			actors: "",
-			directors: "",
-		},
-	],
+	movies: [],
 
 	actors: [
 		{
@@ -227,21 +180,31 @@ export const actions = {
 		toolkit.commit("setSortingOrder", payload);
 	},
 	fetchMovies(toolkit) {
-		fetch("http://localhost:8081/movies")
-			.then(response => response.json())
-			.then(movie_entries => {
-				return movie_entries.map(movie_entry => ({
-					id: movie_entry.movieid,
-					title: movie_entry.title,
-					releaseyear: parseInt(movie_entry.releaseyear),
-					releasedate: movie_entry.releasedate,
-					genre: movie_entry.genre,
-					writer: movie_entry.writer,
-					actors: movie_entry.actors,
-					directors: movie_entry.directors,
-				}));
-			})
-			.then(movies => toolkit.commit("setMovies", movies));
+		if (!moviesFetched) {
+			fetch("http://localhost:8081/movies")
+				.then(response => response.json())
+				.then(movie_entries => {
+					return movie_entries.map(movie_entry => {
+						let movie = {
+							id: movie_entry.movieid,
+							title: movie_entry.title,
+							cover: "",
+							releaseyear: parseInt(movie_entry.releaseyear),
+							releasedate: movie_entry.releasedate,
+							genre: movie_entry.genre,
+							writer: movie_entry.writer,
+							actors: movie_entry.actors,
+							directors: movie_entry.directors,
+						};
+						getImageUrl(movie);
+						return movie;
+					});
+				})
+				.then(movies => {
+					moviesFetched = true;
+					return toolkit.commit("setMovies", movies);
+				});
+		}
 	},
 	onMoviesChanged(toolkit, payload) {
 		toolkit.commit("setMovies", payload);
