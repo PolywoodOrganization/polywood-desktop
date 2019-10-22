@@ -233,7 +233,7 @@ export const actions = {
 				return movie_entries.map(movie_entry => ({
 					id: movie_entry.movieid,
 					title: movie_entry.title,
-					releaseyear: movie_entry.releaseyear,
+					releaseyear: parseInt(movie_entry.releaseyear),
 					releasedate: movie_entry.releasedate,
 					genre: movie_entry.genre,
 					writer: movie_entry.writer,
