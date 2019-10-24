@@ -10,7 +10,15 @@ async function getImageUrl(movie) {
 /**
  * Boolean that indicates if the movies are already fetched
  */
-let moviesFetched = false;
+let lastMoviesFetch = {
+	page: null,
+	size: null,
+};
+
+const WEBSERVICE_MOVIES_ADDRESS = "localhost";
+const WEBSERVICE_MOVIES_PORT = 8081;
+const WEBSERVICE_ACTORS_ADDRESS = "localhost";
+const WEBSERVICE_ACTORS_PORT = 8082;
 
 export const state = {
 	/**
@@ -178,9 +186,17 @@ export const actions = {
 	onSortingOrderChanged(toolkit, payload) {
 		toolkit.commit("setSortingOrder", payload);
 	},
-	fetchMovies(toolkit) {
-		if (!moviesFetched) {
-			fetch("http://localhost:8081/movies?page=0&size=20")
+	/**
+	 * Fetch the movie from the database and store the result in the state.
+	 * @param toolkit The Vuex toolkit.
+	 * @param page The page to fetch. The index starts from 0. Default value is 0.
+	 * @param size The number of movies to fetch from the databse. Default value is 20.
+	 */
+	fetchMovies(toolkit, page = 0, size = 20) {
+		if (lastMoviesFetch.page !== page || lastMoviesFetch.size !== size) {
+			fetch(
+				`http://${WEBSERVICE_MOVIES_ADDRESS}:${WEBSERVICE_MOVIES_PORT}/movies?page=${page}&size=${size}&sort=title`
+			)
 				.then(response => response.json())
 				.then(movie_entries => {
 					return movie_entries.map(movie_entry => {
@@ -200,7 +216,8 @@ export const actions = {
 					});
 				})
 				.then(movies => {
-					moviesFetched = true;
+					lastMoviesFetch["page"] = page;
+					lastMoviesFetch["size"] = size;
 					return toolkit.commit("setMovies", movies);
 				});
 		}
