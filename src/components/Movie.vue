@@ -1,6 +1,6 @@
 <template>
 	<Card v-if="title !== ''" :title="title" :cover="cover">
-		<p class="card-text"><b>Genre :</b> <span v-html="parseGenre"></span></p>
+		<p class="card-text"><b>Genre :</b> <Badge v-for="g in parseGenre" @onBadgeClicked="onGenreClicked" :title="g" :label-color="getGenreColorType(g)" :key="g"/></p>
 		<p class="card-text"><b>Sortie :</b> {{releaseyear}}</p>
 		<p class="card-text"><b>Acteurs :</b> <span v-html="parseActors"></span></p>
 		<p class="card-text"><b>Directeurs :</b> <span v-html="parseDirectors"></span></p>
@@ -12,37 +12,11 @@
 
 <script>
 import Card from "./Card";
-
-function getGenreColorType(genre) {
-	switch (genre.toLowerCase()) {
-		case "drama":
-		case "thriller":
-		case "action":
-			return "danger";
-		case "horror":
-		case "crime":
-		case "history":
-			return "secondary";
-		case "romance":
-		case "sci-fi":
-		case "scifi":
-			return "warning";
-		case "adventure":
-		case "biography":
-			return "info";
-		case "mystery":
-		case "fantasy":
-			return "light";
-		case "comedy":
-			return "success";
-		default:
-			return "primary";
-	}
-}
+import Badge from "./Badge";
 
 export default {
 	name: "Movie",
-	components: { Card },
+	components: { Badge, Card },
 	data() {
 		return {
 			isHoveringCard: false,
@@ -79,6 +53,38 @@ export default {
 			type: String,
 		},
 	},
+	methods: {
+		onGenreClicked(g) {
+			if (g !== undefined)
+				this.$store.dispatch("onSearchValueChanged", g);
+		},
+		getGenreColorType(genre) {
+			switch (genre.toLowerCase()) {
+				case "drama":
+				case "thriller":
+				case "action":
+					return "danger";
+				case "horror":
+				case "crime":
+				case "history":
+					return "secondary";
+				case "romance":
+				case "sci-fi":
+				case "scifi":
+					return "warning";
+				case "adventure":
+				case "biography":
+					return "info";
+				case "mystery":
+				case "fantasy":
+					return "light";
+				case "comedy":
+					return "success";
+				default:
+					return "primary";
+			}
+		},
+	},
 	computed: {
 		parseActors() {
 			return this.actors.replace(/\s*\|\s*/g, ", ");
@@ -87,12 +93,8 @@ export default {
 			return this.directors.replace(/\s*\|\s*/g, ", ");
 		},
 		parseGenre() {
-			let html = '';
-			this.genre.split(/\s*\|\s*/).forEach(g => {
-				html += `<span class="badge badge-${getGenreColorType(g)} badge-genre">${g}</span>`
-			});
-			return html;
-		}
+			return this.genre.split(/\s*\|\s*/);
+		},
 	},
 };
 </script>
