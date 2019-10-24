@@ -1,6 +1,5 @@
 <template>
 	<Card v-if="title !== ''" :title="title" :cover="cover">
-		<p class="card-text"><b>Genre :</b> <span v-html="parseGenre"></span></p>
 		<p class="card-text"><b>Genre :</b> <Badge v-for="g in parseGenre" @onBadgeClicked="onGenreClicked" :title="g" :label-color="getGenreColorType(g)" :key="g"/></p>
 		<p class="card-text"><b>Sortie :</b> {{releaseyear}}</p>
 		<p class="card-text"><b>Acteurs :</b> <span v-html="parseActors"></span></p>
@@ -57,7 +56,7 @@ export default {
 	methods: {
 		onGenreClicked(g) {
 			if (g !== undefined)
-				this.$store.dispatch("onSearchValueChanged");
+				this.$store.dispatch("onSearchValueChanged", g);
 		},
 		getGenreColorType(genre) {
 			switch (genre.toLowerCase()) {

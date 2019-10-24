@@ -87,7 +87,7 @@ export const getters = {
 	movies(state) {
 		let list = null;
 
-		// Function that check if the given field from `movie` is not undefined and contain the search value
+		// Function that check if the given field from `movie` is not undefined and contains the search value
 		let checkField = function(field, state) {
 			if (field !== undefined) {
 				try {
@@ -180,7 +180,7 @@ export const actions = {
 	},
 	fetchMovies(toolkit) {
 		if (!moviesFetched) {
-			fetch("http://localhost:8081/movies")
+			fetch("http://localhost:8081/movies?page=0&size=20")
 				.then(response => response.json())
 				.then(movie_entries => {
 					return movie_entries.map(movie_entry => {

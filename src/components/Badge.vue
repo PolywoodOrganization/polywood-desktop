@@ -1,5 +1,5 @@
 <template>
-	<a @click="this.$emit('onBadgeClicked', this.title)"><span :class="['badge', 'badge-' + this.labelColor]">{{title}}</span></a>
+	<a @click="$emit('onBadgeClicked', title)"><span :class="['badge', 'badge-' + labelColor]">{{title}}</span></a>
 </template>
 
 <script>
