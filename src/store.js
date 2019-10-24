@@ -84,37 +84,33 @@ export const getters = {
 	movies(state) {
 		let list = null;
 
+		// Function that check if the given field from `movie` is not undefined and contain the search value
+		let checkField = function(field, state) {
+			if (field !== undefined) {
+				try {
+					return field
+						.toString()
+						.toLowerCase()
+						.includes(state.searchValue.toLowerCase());
+				} catch (e) {
+					return false;
+				}
+			} else return false;
+		};
+
 		// Filter according to searchValue
 		if (state.searchValue === "") list = state.movies;
 		else
 			list = state.movies.filter(movie => {
-				return (
-					movie.title.toLowerCase().includes(state.searchValue.toLowerCase()) ||
-					movie.releaseyear
-						.toString()
-						.toLowerCase()
-						.includes(state.searchValue.toLowerCase()) ||
-					movie.releasedate
-						.toString()
-						.toLowerCase()
-						.includes(state.searchValue.toLowerCase()) ||
-					movie.genre
-						.toString()
-						.toLowerCase()
-						.includes(state.searchValue.toLowerCase()) ||
-					movie.writer
-						.toString()
-						.toLowerCase()
-						.includes(state.searchValue.toLowerCase()) ||
-					movie.actors
-						.toString()
-						.toLowerCase()
-						.includes(state.searchValue.toLowerCase()) ||
-					movie.directors
-						.toString()
-						.toLowerCase()
-						.includes(state.searchValue.toLowerCase())
-				);
+				let result = false;
+				result = result || checkField(movie.title, state);
+				result = result || checkField(movie.releaseyear, state);
+				result = result || checkField(movie.releasedate, state);
+				result = result || checkField(movie.genre, state);
+				result = result || checkField(movie.writer, state);
+				result = result || checkField(movie.actors, state);
+				result = result || checkField(movie.directors, state);
+				return result;
 			});
 
 		// Sort according to sortingMethod
