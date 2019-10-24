@@ -13,13 +13,9 @@
 		<div class="row">
 			<div class="col-12">
 				<ul class="pagination pagination-lg justify-content-center">
-					<li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>
-					<li class="page-item" :class="{active: page === 1}"><a class="page-link" @click="onPageClicked">1</a></li>
-					<li class="page-item" :class="{active: page === 2}"><a class="page-link" @click="onPageClicked">2</a></li>
-					<li class="page-item" :class="{active: page === 3}"><a class="page-link" @click="onPageClicked">3</a></li>
-					<li class="page-item" :class="{active: page === 4}"><a class="page-link" @click="onPageClicked">4</a></li>
-					<li class="page-item" :class="{active: page === 5}"><a class="page-link" @click="onPageClicked">5</a></li>
-					<li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
+					<li class="page-item" :class="{disabled: page === 1}"><a class="page-link" @click="onPageClicked">&laquo;</a></li>
+					<li class="page-item" v-for="p in generatePaginationRange(this.lowerPage, this.upperPage)" :class="{active: page === p}" :key="p"><a class="page-link" @click="onPageClicked">{{p}}</a></li>
+					<li class="page-item" :class="{disabled: page === this.maxPage}"><a class="page-link" @click="onPageClicked">&raquo;</a></li>
 				</ul>
 			</div>
 		</div>
@@ -41,6 +37,9 @@ export default {
 		return {
 			// Index begins with 1
 			page: 1,
+			maxPage: 285,
+			lowerPage: 1,
+			upperPage: 5,
 		};
 	},
 	props: {
@@ -54,15 +53,45 @@ export default {
 	methods: {
 		onPageClicked(event) {
 			let p = parseInt(event.target.text);
+			
+			if (event.target.text === '«')
+				p = 1;
+			if (event.target.text === '»')
+				p = this.maxPage;
+			
 			if (!isNaN(p)) {
 				this.page = p;
 				this.updateMoviesPage();
 			}
+			
+			// Update the pagination
+			this.lowerPage = Math.max(this.page - 2, 1);
+			this.upperPage = Math.min(this.page + 2, this.maxPage);
+			let delta = this.upperPage - this.lowerPage;
+			// If the number of maximum page available is not matched, add the other pages
+			if (delta < 4) {
+				if (this.lowerPage === 1) {
+					// Add more page in upperPage
+					this.upperPage += 4 - delta
+				}
+				else {
+					// Add more page in lowerPage
+					this.lowerPage -= 4 - delta
+				}
+			}
+			
+			// Scroll at the top of the page
 			document.getElementById("movies").scrollIntoView({behavior: "smooth"});
 		},
 		updateMoviesPage() {
 			this.$store.dispatch("fetchMovies", this.page);
-		}
+		},
+		generatePaginationRange(min, max, step = 1) {
+			let range = [];
+			for (let i = min; i <= max; i += step)
+				range.push(i);
+			return range;
+		},
 	},
 };
 </script>
