@@ -81,6 +81,9 @@ export const getters = {
 	sortingMethod(state) {
 		return state.sortingMethod;
 	},
+	sortingOrder(state) {
+		return state.sortingOrder;
+	},
 	movies(state) {
 		let list = null;
 
