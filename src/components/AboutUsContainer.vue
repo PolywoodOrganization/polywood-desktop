@@ -1,9 +1,34 @@
 <template>
 	<div class="container">
-		<div class="row justify-content-center">
-			<h2>À propos de l'équipe Polywood</h2>
+		<div class="row">
+			<h2 class="col-12">À propos de Polywood</h2>
+			
+			<div class="jumbotron col-12">
+				<h1 class="display-3">Polywood</h1>
+				<p class="lead">Le meilleur du cinéma Polywoodien!</p>
+				<hr class="my-4"/>
+				<p>
+					Polywood est une filiale de Polytech Corporation. Son but est d'oeuvrer pour une meilleure qualité
+					cinématographie, et de combattre le spoil, un problème qui fait encore plusieurs milliers de
+					victimes chaques années. Luttons contre le spoil! Dites <b>NON</b> aux "<i>résumés rapides</i>" du
+					dernier épisode de votre série du moment de la part de votre collègue à la machine à café!
+				</p>
+			</div>
+			
+			<div class="jumbotron col-12">
+				<h1 class="display-3">Polytech Corporation&reg;</h1>
+				<p class="lead">Le leader mondial en terme d'éducation et d'ingénierie</p>
+				<hr class="my-4"/>
+				<p>
+					Polytech Corp est la multinationale française dont l'expértise en éducation et ingénierie reste
+					encore inégalée.
+				</p>
+			</div>
 		</div>
+		
 		<div class="row justify-content-center">
+			<h2 class="col-12">À propos de l'équipe Polywood</h2>
+			
 			<Card
 				v-for="developer in this.$store.getters.developers"
 				:title="developer.name"
@@ -41,6 +66,23 @@ export default {
 </script>
 
 <style scoped lang="scss">
+h1, h2, h3, h4, h5, h6 {
+	display: block;
+}
+h2 {
+	margin-bottom: 20px;
+}
+
+.row {
+	margin-bottom: 50px;
+}
+
+.jumbotron {
+	h1, h2, h3, h4, h5, h6 {
+		color: white;
+	}
+}
+
 .badge {
 	margin-right: 5px;
 }
