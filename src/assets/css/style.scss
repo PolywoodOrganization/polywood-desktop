@@ -18,9 +18,9 @@ body {
 }
 
 a {
-	color: #00bc8c;
 	text-decoration: underline;
 	cursor: pointer;
+	transition: all ease-in .2s;
 }
 
 h1, h2, h3, h4, h5, h6 {

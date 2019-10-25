@@ -37,7 +37,8 @@
 		],
 		"rules": {
 			"no-console": "off",
-			"no-unused-vars": "off"
+			"no-unused-vars": "off",
+			"no-empty": "off"
 		},
 		"parserOptions": {
 			"parser": "babel-eslint"
@@ -58,6 +59,7 @@
 		"tabWidth": 4,
 		"semi": true,
 		"singleQuote": false,
-		"printWidth": 120
+		"printWidth": 120,
+		"jsxBracketSameLine": true
 	}
 }
