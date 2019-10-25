@@ -11,8 +11,8 @@ async function getImageUrl(movie) {
  * Boolean that indicates if the movies are already fetched
  */
 let lastMoviesFetch = {
-	page: null,
-	size: null,
+	page: undefined,
+	size: undefined,
 };
 
 const WEBSERVICE_MOVIES_ADDRESS = "localhost";
@@ -77,6 +77,29 @@ export const state = {
 			googlehits: 0,
 		},
 	],
+
+	/**
+	 * When the search value is not empty, the total number of movies is reduced, and the new number is stored in this
+	 * variable.
+	 */
+	totalNumberOfMoviesWithSearch: null,
+
+	/**
+	 * When the search value is not empty, the total number of actors is reduced, and the new number is stored in this
+	 * variable.
+	 */
+	totalNumberOfActorsWithSearch: null,
+
+	/**
+	 * Current page in the pagination for the movies and actors. One-indexed number. If `null`, then no pagination is
+	 * used.
+	 */
+	currentPageNumber: null,
+
+	/**
+	 * Number of movies/actors to display in a page. If `null`, then no pagination is used.
+	 */
+	batchSize: null,
 };
 
 export const getters = {
@@ -93,6 +116,7 @@ export const getters = {
 		return state.sortingOrder;
 	},
 	movies(state) {
+		// page is a zero-based index
 		let list = null;
 
 		// Function that check if the given field from `movie` is not undefined and contains the search value
@@ -136,7 +160,22 @@ export const getters = {
 		// If order is "Descending"
 		if (state.sortingOrder === 1) list.reverse();
 
+		state.totalNumberOfMoviesWithSearch = list.length;
+
+		// Take a subset of the list if `page` and `size` are valid
+		if (state.currentPageNumber !== null && state.batchSize !== null)
+			list = list.slice(
+				(state.currentPageNumber - 1) * state.batchSize,
+				state.currentPageNumber * state.batchSize
+			);
+
 		return list;
+	},
+	totalNumberOfMovies(state) {
+		return state.movies.length;
+	},
+	totalNumberOfMoviesWithSearch(state) {
+		return state.totalNumberOfMoviesWithSearch;
 	},
 	actors(state) {
 		let list = null;
@@ -171,6 +210,18 @@ export const getters = {
 
 		return list;
 	},
+	totalNumberOfActors(state) {
+		return state.actors.length;
+	},
+	totalNumberOfActorsWithSearch(state) {
+		return state.totalNumberOfActorsWithSearch;
+	},
+	currentPageNumber(state) {
+		return state.currentPageNumber;
+	},
+	batchSize(state) {
+		return state.batchSize;
+	},
 };
 
 export const actions = {
@@ -192,11 +243,13 @@ export const actions = {
 	 * @param page The page to fetch. The index starts from 0. Default value is 0.
 	 * @param size The number of movies to fetch from the databse. Default value is 20.
 	 */
-	fetchMovies(toolkit, page = 0, size = 20) {
+	fetchMovies(toolkit, page = null, size = null) {
 		if (lastMoviesFetch.page !== page || lastMoviesFetch.size !== size) {
-			fetch(
-				`http://${WEBSERVICE_MOVIES_ADDRESS}:${WEBSERVICE_MOVIES_PORT}/movies?page=${page}&size=${size}&sort=title`
-			)
+			let request = `http://${WEBSERVICE_MOVIES_ADDRESS}:${WEBSERVICE_MOVIES_PORT}/movies?`;
+			if (page !== null && size !== null) request += `page=${page}&size=${size}&`;
+			request += `sort=title`;
+
+			fetch(request)
 				.then(response => response.json())
 				.then(movie_entries => {
 					return movie_entries.map(movie_entry => {
@@ -231,6 +284,12 @@ export const actions = {
 	onActorsChanged(toolkit, payload) {
 		toolkit.commit("setActors", payload);
 	},
+	onCurrentPageNumberChanged(toolkit, payload) {
+		toolkit.commit("setCurrentPageNumber", payload);
+	},
+	onBatchSizeChanged(toolkit, payload) {
+		toolkit.commit("setBatchSize", payload);
+	},
 };
 
 export const mutations = {
@@ -249,7 +308,25 @@ export const mutations = {
 	setMovies(state, payload) {
 		state.movies = payload;
 	},
+	setTotalNumberOfMoviesWithSearch(state, payload) {
+		state.totalNumberOfMoviesWithSearch = payload;
+	},
 	setActors(state, payload) {
 		state.actors = payload;
+	},
+	setTotalNumberOfActorsWithSearch(state, payload) {
+		state.totalNumberOfActorsWithSearch = payload;
+	},
+	setCurrentPageNumber(state, payload) {
+		let p = payload;
+		if (typeof p !== "number") p = parseInt(p);
+
+		if (!isNaN(p)) state.currentPageNumber = p;
+	},
+	setBatchSize(state, payload) {
+		let p = payload;
+		if (typeof p !== "number") p = parseInt(p);
+
+		if (!isNaN(p)) state.batchSize = p;
 	},
 };
