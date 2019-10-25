@@ -109,6 +109,7 @@ export default {
 
 <style scoped lang="scss">
 @import "../assets/css/bootstrap.min.css";
+@import "../assets/css/colors";
 
 .movie {
 	display: inline-block;
@@ -116,5 +117,24 @@ export default {
 
 .page-item a {
 	text-decoration: none;
+}
+
+.pagination {
+	margin-top: 20px;
+}
+
+.page-link {
+	background-color: $yellow;
+	transition: all ease-in .2s;
+	color: #000000ad !important;
+}
+.page-link:hover {
+	background-color: $yellowLight;
+}
+.page-item.active .page-link {
+	background-color: $yellowLight;
+}
+.page-item.disabled .page-link {
+	background-color: $yellowDark;
 }
 </style>
