@@ -1,11 +1,11 @@
 <template>
-	<Card v-if="title !== ''" :title="title" :cover="cover">
+	<Card v-if="title !== ''" :title="title" :cover="cover" additional-card-class="col-lg-3 col-md-2 border-secondary">
 		<p class="card-text"><b>Genre :</b> <Badge v-for="g in parseGenre" @onBadgeClicked="onGenreClicked" :title="g" :label-color="getGenreColorType(g)" :key="g"/></p>
 		<p class="card-text"><b>Sortie :</b> {{releaseyear}}</p>
 		<p class="card-text"><b>Acteurs :</b> <span v-html="parseActors"></span></p>
 		<p class="card-text"><b>Directeurs :</b> <span v-html="parseDirectors"></span></p>
 	</Card>
-	<Card v-else additional-card-class="border-warning bg-warning empty-movie">
+	<Card v-else additional-card-class="border-warning bg-warning empty-movie col-lg-3 col-md-2">
 		<img src="../assets/img/clapper.png" alt="Aucun film disponible" title="Aucun film disponible"/>
 	</Card>
 </template>

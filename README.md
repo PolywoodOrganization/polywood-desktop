@@ -17,7 +17,7 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ## Authors
 
-> **(*Chef*) Léa CHEMOUL:** Full Stack Developer, Management Executor (Junior)
+> **(*Chef*) Léa CHEMOUL:** Full Stack Developer, Executive Manager (Junior)
 >
 > **Philippine CLUNIAT:** Front-End mobile developer, designer
 >
