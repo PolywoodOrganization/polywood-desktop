@@ -94,12 +94,12 @@ export const state = {
 	 * Current page in the pagination for the movies and actors. One-indexed number. If `null`, then no pagination is
 	 * used.
 	 */
-	currentPageNumber: null,
+	currentPageNumber: 1,
 
 	/**
 	 * Number of movies/actors to display in a page. If `null`, then no pagination is used.
 	 */
-	batchSize: null,
+	batchSize: 20,
 };
 
 export const getters = {
@@ -135,7 +135,7 @@ export const getters = {
 
 		// Filter according to searchValue
 		if (state.searchValue === "") list = state.movies;
-		else
+		else {
 			list = state.movies.filter(movie => {
 				let result = false;
 				result = result || checkField(movie.title, state);
@@ -147,6 +147,9 @@ export const getters = {
 				result = result || checkField(movie.directors, state);
 				return result;
 			});
+			state.currentPageNumber = 1;
+		}
+		state.totalNumberOfMoviesWithSearch = list.length;
 
 		// Sort according to sortingMethod
 		// Sort alphabetically
@@ -159,8 +162,6 @@ export const getters = {
 
 		// If order is "Descending"
 		if (state.sortingOrder === 1) list.reverse();
-
-		state.totalNumberOfMoviesWithSearch = list.length;
 
 		// Take a subset of the list if `page` and `size` are valid
 		if (state.currentPageNumber !== null && state.batchSize !== null)
@@ -230,6 +231,7 @@ export const actions = {
 	},
 	onSearchValueChanged(toolkit, payload) {
 		toolkit.commit("setSearchValue", payload);
+		toolkit.commit("setCurrentPageNumber", 1);
 	},
 	onSortingMethodChanged(toolkit, payload) {
 		toolkit.commit("setSortingMethod", payload);
