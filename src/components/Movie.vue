@@ -61,23 +61,26 @@ export default {
 		getGenreColorType(genre) {
 			switch (genre.toLowerCase()) {
 				case "drama":
+				case "horror":
+					return "purple";
+				case "romance":
+					return "pink";
 				case "thriller":
+				case "mystery":
+					return "brown";
 				case "action":
 					return "danger";
-				case "horror":
 				case "crime":
 				case "history":
 					return "secondary";
-				case "romance":
 				case "sci-fi":
 				case "scifi":
 					return "warning";
 				case "adventure":
 				case "biography":
 					return "info";
-				case "mystery":
 				case "fantasy":
-					return "light";
+					return "yellow";
 				case "comedy":
 					return "success";
 				default:
@@ -100,7 +103,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import "../assets/css/card-style";
+@import "../assets/css/more-badges";
 
 .badge-genre {
 	margin-right: 5px;
