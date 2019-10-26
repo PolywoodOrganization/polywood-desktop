@@ -4,7 +4,7 @@
 			<h2 class="col-12">À propos de Polywood</h2>
 			
 			<div class="jumbotron col-12">
-				<h1 class="display-3">Polywood</h1>
+				<h1 class="display-4">Polywood</h1>
 				<p class="lead">Le meilleur du cinéma Polywoodien!</p>
 				<hr class="my-4"/>
 				<p>
@@ -16,7 +16,7 @@
 			</div>
 			
 			<div class="jumbotron col-12">
-				<h1 class="display-3">Polytech Corporation&reg;</h1>
+				<h1 class="display-4">Polytech Corporation&reg;</h1>
 				<p class="lead">Le leader mondial en terme d'éducation et d'ingénierie</p>
 				<hr class="my-4"/>
 				<p>
@@ -38,13 +38,25 @@
 				:additional-card-class="['col-lg-5', 'col-md-10', 'border-' + developer.colorLabel]"
 				additional-cover-style="max-width: 200px;"
 				additional-cover-class="align-self-center">
-				<p><b>Nom:</b> {{developer.name}}</p>
 				<p><b>Jobs:</b> <span
 					v-for="(job, index) in developer.jobs"
 					:class="['badge', {'badge-primary' : index === 0}, badgeColorClass(developer, index)]"
 					:key="index">{{job}}</span>
 				</p>
 			</Card>
+		</div>
+		
+		<div class="row raw-text">
+			<h2 class="col-12">Code Source</h2>
+			
+			<p class="col-12">Les logiciels de Polywood sont Open Source, et disponible sur <img src="../assets/img/github/GitHub-Mark-Light-32px.png" style="height: 1em;" alt="GitHub Logo"/> GitHub :</p>
+			<ul class="col-12">
+				<li>Code Source du site web Polywood: <a href="https://github.com/PolywoodOrganization/polywood-desktop" target="_blank"><img src="../assets/img/github/GitHub-Mark-Light-32px.png" alt="GitHub Logo"/> GitHub - polywood-desktop</a></li>
+				<li>Code Source de Polywood sur mobile: <a href="https://github.com/PolywoodOrganization/polywood-mobile" target="_blank"><img src="../assets/img/github/GitHub-Mark-Light-32px.png" alt="GitHub Logo"/> GitHub - polywood-mobile</a></li>
+				<li>Code Source du webservice des films: <a href="https://github.com/PolywoodOrganization/polywood-film-service" target="_blank"><img src="../assets/img/github/GitHub-Mark-Light-32px.png" alt="GitHub Logo"/> GitHub - polywood-film-service</a></li>
+				<li>Code Source du webservice des acteurs: <a href="https://github.com/PolywoodOrganization/polywood-actor-service" target="_blank"><img src="../assets/img/github/GitHub-Mark-Light-32px.png" alt="GitHub Logo"/> GitHub - polywood-actor-service</a></li>
+				<li>Page GitHub de Polywood: <a href="https://github.com/PolywoodOrganization/" target="_blank"><img src="../assets/img/github/GitHub-Mark-Light-32px.png" alt="GitHub Logo"/> GitHub - Polywood Organization</a></li>
+			</ul>
 		</div>
 	</div>
 </template>
@@ -85,5 +97,17 @@ h2 {
 
 .badge {
 	margin-right: 5px;
+}
+
+li img {
+	height: 1em;
+}
+
+p, li {
+	font-size: 14pt;
+}
+
+.raw-text {
+	margin: 0 100px;
 }
 </style>
