@@ -1,8 +1,32 @@
 <template>
-	<div class="card border-secondary shadow-sm col-lg-3 col-md-2" @mouseover="isHoveringCard = true" @mouseout="isHoveringCard = false" :class="[{shadow: isHoveringCard}, this.additionalCardClass]">
-		<div class="card-header" :class="this.additionalCardHeaderClass" v-if="title !== ''">{{title}}</div>
-		<img class="card-img-top" v-if="cover !== ''" :src="cover" :alt="coverAlt" :class="additionalCoverClass"/>
-		<div class="card-body" :class="this.additionalCardBodyClass">
+	<div
+		class="card shadow-sm"
+		@mouseover="isHoveringCard = true"
+		@mouseout="isHoveringCard = false"
+		:class="[{shadow: isHoveringCard}, additionalCardClass]"
+		:style="additionalCardStyle">
+		
+		<div
+			v-if="title !== ''"
+			class="card-header"
+			:class="additionalCardHeaderClass"
+			:style="additionalCardHeaderStyle">
+			{{title}}
+		</div>
+		
+		<img
+			v-if="cover !== ''"
+			class="card-img-top"
+			:src="cover"
+			:alt="coverAlt"
+			:title="coverAlt"
+			:class="additionalCoverClass"
+			:style="additionalCoverStyle"/>
+		
+		<div
+			class="card-body"
+			:class="additionalCardBodyClass"
+			:style="additionalCardBodyStyle">
 			<slot></slot>
 		</div>
 	</div>
@@ -37,7 +61,17 @@ export default {
 			required: false,
 			default: '',
 		},
+		additionalCardStyle: {
+			type: String,
+			required: false,
+			default: '',
+		},
 		additionalCardHeaderClass: {
+			type: String,
+			required: false,
+			default: '',
+		},
+		additionalCardHeaderStyle: {
 			type: String,
 			required: false,
 			default: '',
@@ -47,11 +81,21 @@ export default {
 			required: false,
 			default: '',
 		},
+		additionalCardBodyStyle: {
+			type: String,
+			required: false,
+			default: '',
+		},
 		additionalCoverClass: {
 			type: String,
 			required: false,
 			default: '',
-		}
+		},
+		additionalCoverStyle: {
+			type: String,
+			required: false,
+			default: '',
+		},
 	},
 };
 </script>

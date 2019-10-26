@@ -100,6 +100,44 @@ export const state = {
 	 * Number of movies/actors to display in a page. If `null`, then no pagination is used.
 	 */
 	batchSize: 20,
+
+	/**
+	 * Information about the developers that coded this webapp.
+	 */
+	developers: [
+		{
+			id: 0,
+			name: "Léa CHEMOUL",
+			image:
+				"https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/emojidex/112/female-student-type-3_1f469-1f3fc-200d-1f393.png",
+			jobs: ["Full Stack Developer", "Executive Manager (Junior)"],
+			colorLabel: "warning",
+		},
+		{
+			id: 1,
+			name: "Philippine CLUNIAT",
+			image:
+				"https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/emojione/211/female-student-type-3_1f469-1f3fc-200d-1f393.png",
+			jobs: ["Front-End mobile developer", "Designer"],
+			colorLabel: "info",
+		},
+		{
+			id: 2,
+			name: "Anthony BACCUET",
+			image:
+				"https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/whatsapp/224/male-student_1f468-200d-1f393.png",
+			jobs: ["Back-end developer", "Artiste Soubassophone"],
+			colorLabel: "danger",
+		},
+		{
+			id: 3,
+			name: "Valentin BERGER",
+			image:
+				"https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/emojione/211/male-student_1f468-200d-1f393.png",
+			jobs: ["Front-end developer", "README writer"],
+			colorLabel: "success",
+		},
+	],
 };
 
 export const getters = {
@@ -222,6 +260,9 @@ export const getters = {
 	},
 	batchSize(state) {
 		return state.batchSize;
+	},
+	developers(state) {
+		return state.developers;
 	},
 };
 
