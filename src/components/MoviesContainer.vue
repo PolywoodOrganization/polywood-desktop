@@ -13,9 +13,9 @@
 		<div class="row">
 			<div class="col-12">
 				<ul class="pagination pagination-lg justify-content-center">
-					<li class="page-item" :class="{disabled: page === 1}"><a class="page-link" @click="onPageClicked">&laquo;</a></li>
-					<li class="page-item" v-for="p in generatePaginationRange(this.pageBounds[0], this.pageBounds[1])" :class="{active: page === p}" :key="p"><a class="page-link" @click="onPageClicked">{{p}}</a></li>
-					<li class="page-item" :class="{disabled: page === this.maxPage}"><a class="page-link" @click="onPageClicked">&raquo;</a></li>
+					<li class="page-item" :class="{disabled: currentPageNumber === 1}"><a class="page-link" @click="onPageClicked">&laquo;</a></li>
+					<li class="page-item" v-for="p in generatePaginationRange(pageBounds[0], pageBounds[1])" :class="{active: currentPageNumber === p}" :key="p"><a class="page-link" @click="onPageClicked">{{p}}</a></li>
+					<li class="page-item" :class="{disabled: currentPageNumber === this.maxPage}"><a class="page-link" @click="onPageClicked">&raquo;</a></li>
 				</ul>
 			</div>
 		</div>
@@ -29,27 +29,9 @@ import Card from "./Card";
 export default {
 	name: "MoviesContainer",
 	created() {
-		this.page = this.initPage;
 		this.$store.dispatch("fetchMovies");
-		this.$store.dispatch("onCurrentPageNumberChanged", this.page);
-		this.$store.dispatch("onBatchSizeChanged", this.moviesBatchSize);
 	},
 	components: { Movie, Card },
-	data() {
-		return {
-			// Index begins with 1
-			page: 1,
-			moviesBatchSize: 20,
-		};
-	},
-	props: {
-		// Index begins with 1
-		initPage: {
-			type: Number,
-			required: false,
-			default: 1,
-		}
-	},
 	methods: {
 		onPageClicked(event) {
 			let p = parseInt(event.target.text);
@@ -59,10 +41,8 @@ export default {
 			if (event.target.text === '»')
 				p = this.maxPage;
 			
-			if (!isNaN(p)) {
-				this.page = p;
-				this.$store.dispatch("onCurrentPageNumberChanged", this.page);
-			}
+			if (!isNaN(p))
+				this.$store.dispatch("onCurrentPageNumberChanged", p);
 			
 			// Scroll at the top of the page
 			document.getElementById("movies").scrollIntoView({behavior: "smooth"});
@@ -75,6 +55,13 @@ export default {
 		},
 	},
 	computed: {
+		currentPageNumber() {
+			console.log("currentPageNumber> ", this.$store.getters.currentPageNumber);
+			return this.$store.getters.currentPageNumber;
+		},
+		batchSize() {
+			return this.$store.getters.batchSize;
+		},
 		nbMovies() {
 			if (this.$store.getters.searchValue === '') {
 				return this.$store.getters.totalNumberOfMovies;
@@ -84,11 +71,14 @@ export default {
 			}
 		},
 		maxPage() {
-			return Math.ceil(this.nbMovies / this.moviesBatchSize);
+			if (!isNaN(this.batchSize) && this.batchSize > 0)
+				return Math.max(1, Math.ceil(this.nbMovies / this.batchSize));
+			else
+				return 1;
 		},
 		pageBounds() {
-			let lowerPage = Math.max(this.page - 2, 1);
-			let upperPage = Math.min(this.page + 2, this.maxPage);
+			let lowerPage = Math.max(this.currentPageNumber - 2, 1);
+			let upperPage = Math.min(this.currentPageNumber + 2, this.maxPage);
 			let delta = upperPage - lowerPage;
 			// If the number of maximum page available is not matched, add the other pages
 			if (delta < 4) {
