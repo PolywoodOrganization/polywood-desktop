@@ -26,6 +26,7 @@ import ActorsContainer from "./components/ActorsContainer";
 import AboutUsContainer from "./components/AboutUsContainer";
 import FooterBanner from "./components/FooterBanner";
 import FilterBar from "./components/FilterBar";
+import LoginContainer from "./components/LoginContainer";
 
 export default {
 	name: "app",
@@ -35,17 +36,22 @@ export default {
 		AboutUsContainer,
 		ActorsContainer,
 		MoviesContainer,
+		LoginContainer,
 		PolywoodBanner,
 		NavBar,
 	},
 	computed: {
 		view() {
-			if (this.$store.getters.navigationId === 0)
-				return MoviesContainer;
-			else if (this.$store.getters.navigationId === 1)
-				return ActorsContainer;
-			else
-				return AboutUsContainer;
+			switch (this.$store.getters.navigationId) {
+				case 0:
+					return MoviesContainer;
+				case 1:
+					return ActorsContainer;
+				case 2:
+					return LoginContainer;
+				default:
+					return AboutUsContainer;
+			}
 		},
 	},
 };

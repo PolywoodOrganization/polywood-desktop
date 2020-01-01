@@ -2,7 +2,8 @@
 	<ul>
 		<li @click="onNavClicked(0)" :class="{active: this.$store.getters.navigationId === 0}">Films</li>
 		<li @click="onNavClicked(1)" :class="{active: this.$store.getters.navigationId === 1}">Acteurs</li>
-		<li @click="onNavClicked(2)" :class="{active: this.$store.getters.navigationId === 2}">A propos de Polywood</li>
+		<li @click="onNavClicked(2)" :class="{active: this.$store.getters.navigationId === 2}">Se connecter</li>
+		<li @click="onNavClicked(3)" :class="{active: this.$store.getters.navigationId === 3}">A propos de Polywood</li>
 	</ul>
 </template>
 

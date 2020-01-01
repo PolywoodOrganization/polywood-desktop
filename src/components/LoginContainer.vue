@@ -1,0 +1,49 @@
+<template>
+	<div class="container" id="login-container">
+		<form class="row" @submit.prevent="onLoginClicked">
+			<label for="login-username" class="col-12">Pseudonyme</label>
+			<input type="text" class="form-control col-12" id="login-username" name="login-username" placeholder="Nom d'utilisateur" v-model="username"/>
+			
+			<label for="login-password"  class="col-12">Mot de passe</label>
+			<input type="password" class="form-control col-12" id="login-password" name="login-password" placeholder="••••••••" v-model="password"/>
+			
+			<input type="submit" value="Se connecter" class="btn btn-primary col-12" :class="{'disabled': username === '' || password === ''}"/>
+		</form>
+	</div>
+</template>
+
+<script>
+export default {
+	name: "LoginContainer",
+	data() {
+		return {
+			username: "",
+			password: "",
+		};
+	},
+	methods: {
+		onLoginClicked(which, event) {
+			event.preventDefault();
+		},
+	},
+};
+</script>
+
+<style scoped lang="scss">
+#login-container {
+	display: flex;
+	justify-content: center;
+	
+	.row {
+		label {
+			margin-top: 10px;
+			margin-bottom: 0;
+			padding: 0;
+		}
+		
+		input[type="submit"], input[type="button"], button {
+			margin-top: 10px;
+		}
+	}
+}
+</style>
