@@ -29,7 +29,7 @@
 		name: "ActorsContainer",
 		components: { Actor, Card },
 		created() {
-			this.$store.dispatch("fetchActors");
+			this.$store.dispatch("fetchActors", { token: this.$store.getters.authToken });
 		},
 		methods: {
 			onPageClicked(event) {
@@ -55,7 +55,6 @@
 		},
 		computed: {
 			currentPageNumber() {
-				console.log("currentPageNumber> ", this.$store.getters.currentPageNumber);
 				return this.$store.getters.currentPageNumber;
 			},
 			batchSize() {

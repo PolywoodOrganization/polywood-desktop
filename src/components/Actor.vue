@@ -1,5 +1,5 @@
 <template>
-	<div class="card border-secondary shadow-sm col-lg-3 col-md-2" v-if="name !== ''" @mouseover="isHoveringCard = true" @mouseout="isHoveringCard = false" :class="{shadow: isHoveringCard}">
+	<div class="card border-secondary shadow-sm col-xl-3 col-lg-3 col-md-5 col-sm-12" v-if="name !== ''" @mouseover="isHoveringCard = true" @mouseout="isHoveringCard = false" :class="{shadow: isHoveringCard}">
 		<div class="card-header">{{name}}</div>
 		<div class="card-body">
 			<p class="card-text">Nombre de films : {{moviecount}}</p>

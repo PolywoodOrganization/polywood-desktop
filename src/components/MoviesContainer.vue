@@ -29,7 +29,7 @@ import Card from "./Card";
 export default {
 	name: "MoviesContainer",
 	created() {
-		this.$store.dispatch("fetchMovies");
+		this.$store.dispatch("fetchMovies", { token: this.$store.getters.authToken });
 	},
 	components: { Movie, Card },
 	methods: {
@@ -56,7 +56,6 @@ export default {
 	},
 	computed: {
 		currentPageNumber() {
-			console.log("currentPageNumber> ", this.$store.getters.currentPageNumber);
 			return this.$store.getters.currentPageNumber;
 		},
 		batchSize() {

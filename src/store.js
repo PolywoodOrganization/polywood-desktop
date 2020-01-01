@@ -25,15 +25,8 @@ let lastActorsFetch = {
 	size: undefined,
 };
 
-const WEBSERVICE_MOVIES_ADDRESS = "localhost";
-const WEBSERVICE_MOVIES_PORT = 8081;
-const WEBSERVICE_ACTORS_ADDRESS = "localhost";
-const WEBSERVICE_ACTORS_PORT = 8082;
-const WEBSERVICE_AUTH_ADDRESS = "localhost";
-const WEBSERVICE_AUTH_PORT = 8083;
-
-const userApiClient = axios.create({
-	baseURL: `http://${WEBSERVICE_AUTH_ADDRESS}:${WEBSERVICE_AUTH_PORT}/`,
+const apiConnection = axios.create({
+	baseURL: `http://localhost:8083/`,
 	headers: {
 		Accept: "application/json",
 		"Content-Type": "application/json",
@@ -130,6 +123,8 @@ export const state = {
 			colorLabel: "success",
 		},
 	],
+
+	api: apiConnection,
 
 	/**
 	 * Username, given when logged in (to receive the token).
@@ -273,6 +268,9 @@ export const getters = {
 	developers(state) {
 		return state.developers;
 	},
+	api(state) {
+		return state.api;
+	},
 	username(state) {
 		return state.username;
 	},
@@ -301,15 +299,16 @@ export const actions = {
 	 * @param page The page to fetch. The index starts from 0. Default value is 0.
 	 * @param size The number of movies to fetch from the databse. Default value is 20.
 	 */
-	fetchMovies(toolkit, page = null, size = null) {
+	fetchMovies(toolkit, { token, page = null, size = null }) {
 		if (lastMoviesFetch.page !== page || lastMoviesFetch.size !== size) {
-			let request = `http://${WEBSERVICE_MOVIES_ADDRESS}:${WEBSERVICE_MOVIES_PORT}/movies?`;
+			let request = "/movies?";
 			if (page !== null && size !== null) request += `page=${page}&size=${size}&`;
 			request += `sort=title`;
 
-			fetch(request)
-				.then(response => response.json())
-				.then(movie_entries => {
+			apiConnection
+				.get(request, { headers: { Authorization: `Bearer ${token}` } })
+				.then(response => {
+					let movie_entries = response.data;
 					return movie_entries.map(movie_entry => {
 						let movie = {
 							id: movie_entry.movieid,
@@ -336,14 +335,15 @@ export const actions = {
 	onMoviesChanged(toolkit, payload) {
 		toolkit.commit("setMovies", payload);
 	},
-	fetchActors(toolkit, page = null, size = null) {
+	fetchActors(toolkit, { token, page = null, size = null }) {
 		if (lastActorsFetch.page !== page || lastActorsFetch.size !== size) {
-			let request = `http://${WEBSERVICE_ACTORS_ADDRESS}:${WEBSERVICE_ACTORS_PORT}/actors`;
+			let request = "/actors";
 			if (page !== null && size !== null) request += `?page=${page}&size=${size}`;
 
-			fetch(request)
-				.then(response => response.json())
-				.then(actor_entries => {
+			apiConnection
+				.get(request, { headers: { Authorization: `Bearer ${token}` } })
+				.then(response => {
+					let actor_entries = response.data;
 					return actor_entries.map(actor_entry => {
 						return {
 							id: actor_entry.actorid,
@@ -371,7 +371,7 @@ export const actions = {
 		toolkit.commit("setBatchSize", payload);
 	},
 	login(toolkit, payload) {
-		userApiClient
+		apiConnection
 			.post("/login", payload)
 			.then(response => {
 				toolkit.commit("setAuthToken", response.data);

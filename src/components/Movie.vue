@@ -1,5 +1,5 @@
 <template>
-	<Card v-if="title !== ''" :title="title" :cover="cover" additional-card-class="col-lg-3 col-md-12 border-secondary">
+	<Card v-if="title !== ''" :title="title" :cover="cover" additional-card-class=" col-xl-3 col-lg-3 col-md-5 col-sm-12 border-secondary">
 		<p class="card-text"><b>Genre :</b> <Badge v-for="g in parseGenre" @onBadgeClicked="onGenreClicked" :title="g" :label-color="getGenreColorType(g)" :key="g"/></p>
 		<p class="card-text"><b>Sortie :</b> {{releaseyear}}</p>
 		<p class="card-text"><b>Acteurs :</b> <span v-html="parseActors"></span></p>
