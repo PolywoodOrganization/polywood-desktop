@@ -9,6 +9,20 @@ async function getImageUrl(movie) {
 		});
 }
 
+// Function that check if the given field from `movie` is not undefined and contains the search value
+let checkField = function(searchValue, field, state) {
+	if (field !== undefined) {
+		try {
+			return field
+				.toString()
+				.toLowerCase()
+				.includes(searchValue.toLowerCase());
+		} catch (e) {
+			return false;
+		}
+	} else return false;
+};
+
 /**
  * Boolean that indicates if the movies are already fetched
  */
@@ -154,32 +168,18 @@ export const getters = {
 		// page is a zero-based index
 		let list = null;
 
-		// Function that check if the given field from `movie` is not undefined and contains the search value
-		let checkField = function(field, state) {
-			if (field !== undefined) {
-				try {
-					return field
-						.toString()
-						.toLowerCase()
-						.includes(state.searchValue.toLowerCase());
-				} catch (e) {
-					return false;
-				}
-			} else return false;
-		};
-
 		// Filter according to searchValue
 		if (state.searchValue === "") list = state.movies;
 		else {
 			list = state.movies.filter(movie => {
 				let result = false;
-				result = result || checkField(movie.title, state);
-				result = result || checkField(movie.releaseyear, state);
-				result = result || checkField(movie.releasedate, state);
-				result = result || checkField(movie.genre, state);
-				result = result || checkField(movie.writer, state);
-				result = result || checkField(movie.actors, state);
-				result = result || checkField(movie.directors, state);
+				result = result || checkField(state.searchValue, movie.title, state);
+				result = result || checkField(state.searchValue, movie.releaseyear, state);
+				result = result || checkField(state.searchValue, movie.releasedate, state);
+				result = result || checkField(state.searchValue, movie.genre, state);
+				result = result || checkField(state.searchValue, movie.writer, state);
+				result = result || checkField(state.searchValue, movie.actors, state);
+				result = result || checkField(state.searchValue, movie.directors, state);
 				return result;
 			});
 			state.currentPageNumber = 1;
@@ -240,6 +240,21 @@ export const getters = {
 			list = list.sort((a, b) => {
 				return a.googlehits - b.googlehits;
 			});
+
+		// Filter according to searchValue
+		if (state.searchValue === "") list = state.actors;
+		else {
+			list = state.actors.filter(actor => {
+				let result = false;
+				result = result || checkField(state.searchValue, actor.name, state);
+				result = result || checkField(state.searchValue, actor.moviecount, state);
+				result = result || checkField(state.searchValue, actor.rating, state);
+				result = result || checkField(state.searchValue, actor.googlehits, state);
+				return result;
+			});
+			state.currentPageNumber = 1;
+		}
+		state.totalNumberOfActorsWithSearch = list.length;
 
 		// If order is "Descending"
 		if (state.sortingOrder === 1) list.reverse();

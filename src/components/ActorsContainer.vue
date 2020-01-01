@@ -5,8 +5,11 @@
 		</div>
 		
 		<div class="row justify-content-center" v-else>
-			<Card additional-card-class="border-warning bg-warning empty-movie" title="Aucun acteur trouvé 😕">
+			<Card v-if="this.$store.getters.searchValue !== ''" additional-card-class="border-warning bg-warning empty-movie" title="Aucun acteur trouvé 😕">
 				<img src="../assets/img/director-chair.png" alt="Aucun acteur disponible" title="Aucun acteur disponible"/>
+			</Card>
+			<Card v-else additional-card-class="border-warning bg-warning empty-movie" title="Chargement ⏳">
+				<img src="../assets/img/director-chair.png" alt="Chargement..." title="Chargement..." />
 			</Card>
 		</div>
 		
