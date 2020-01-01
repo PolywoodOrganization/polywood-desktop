@@ -1,3 +1,5 @@
+import axios from "axios";
+
 async function getImageUrl(movie) {
 	fetch(`http://localhost:8081/movies/image/${movie["id"]}`)
 		.then(response => response.text())
@@ -27,6 +29,17 @@ const WEBSERVICE_MOVIES_ADDRESS = "localhost";
 const WEBSERVICE_MOVIES_PORT = 8081;
 const WEBSERVICE_ACTORS_ADDRESS = "localhost";
 const WEBSERVICE_ACTORS_PORT = 8082;
+const WEBSERVICE_AUTH_ADDRESS = "localhost";
+const WEBSERVICE_AUTH_PORT = 8083;
+
+const userApiClient = axios.create({
+	baseURL: `http://${WEBSERVICE_AUTH_ADDRESS}:${WEBSERVICE_AUTH_PORT}/`,
+	headers: {
+		Accept: "application/json",
+		"Content-Type": "application/json",
+	},
+	timeout: 3000,
+});
 
 export const state = {
 	/**
@@ -117,6 +130,16 @@ export const state = {
 			colorLabel: "success",
 		},
 	],
+
+	/**
+	 * Username, given when logged in (to receive the token).
+	 */
+	username: undefined,
+
+	/**
+	 * Authentication token
+	 */
+	authToken: undefined,
 };
 
 export const getters = {
@@ -250,6 +273,12 @@ export const getters = {
 	developers(state) {
 		return state.developers;
 	},
+	username(state) {
+		return state.username;
+	},
+	authToken(state) {
+		return state.authToken;
+	},
 };
 
 export const actions = {
@@ -341,6 +370,22 @@ export const actions = {
 	onBatchSizeChanged(toolkit, payload) {
 		toolkit.commit("setBatchSize", payload);
 	},
+	login(toolkit, payload) {
+		userApiClient
+			.post("/login", payload)
+			.then(response => {
+				toolkit.commit("setAuthToken", response.data);
+				toolkit.commit("setUsername", payload.login);
+			})
+			.catch(error => console.log(error));
+	},
+	logout(toolkit, _) {
+		toolkit.commit("setAuthToken", null);
+		toolkit.commit("setUsername", null);
+	},
+	onAuthTokenChanged(toolkit, payload) {
+		toolkit.commit("setAuthToken", payload);
+	},
 };
 
 export const mutations = {
@@ -379,5 +424,11 @@ export const mutations = {
 		if (typeof p !== "number") p = parseInt(p);
 
 		if (!isNaN(p)) state.batchSize = p;
+	},
+	setUsername(state, payload) {
+		state.username = payload;
+	},
+	setAuthToken(state, payload) {
+		state.authToken = payload;
 	},
 };
