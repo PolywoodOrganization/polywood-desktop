@@ -1,3 +1,5 @@
+import axios from "axios";
+
 async function getImageUrl(movie) {
 	fetch(`http://localhost:8081/movies/image/${movie["id"]}`)
 		.then(response => response.text())
@@ -6,6 +8,20 @@ async function getImageUrl(movie) {
 			return null;
 		});
 }
+
+// Function that check if the given field from `movie` is not undefined and contains the search value
+let checkField = function(searchValue, field, state) {
+	if (field !== undefined) {
+		try {
+			return field
+				.toString()
+				.toLowerCase()
+				.includes(searchValue.toLowerCase());
+		} catch (e) {
+			return false;
+		}
+	} else return false;
+};
 
 /**
  * Boolean that indicates if the movies are already fetched
@@ -23,10 +39,14 @@ let lastActorsFetch = {
 	size: undefined,
 };
 
-const WEBSERVICE_MOVIES_ADDRESS = "localhost";
-const WEBSERVICE_MOVIES_PORT = 8081;
-const WEBSERVICE_ACTORS_ADDRESS = "localhost";
-const WEBSERVICE_ACTORS_PORT = 8082;
+const apiConnection = axios.create({
+	baseURL: `http://localhost:8083/`,
+	headers: {
+		Accept: "application/json",
+		"Content-Type": "application/json",
+	},
+	timeout: 3000,
+});
 
 export const state = {
 	/**
@@ -117,6 +137,18 @@ export const state = {
 			colorLabel: "success",
 		},
 	],
+
+	api: apiConnection,
+
+	/**
+	 * Username, given when logged in (to receive the token).
+	 */
+	username: undefined,
+
+	/**
+	 * Authentication token
+	 */
+	authToken: undefined,
 };
 
 export const getters = {
@@ -136,32 +168,18 @@ export const getters = {
 		// page is a zero-based index
 		let list = null;
 
-		// Function that check if the given field from `movie` is not undefined and contains the search value
-		let checkField = function(field, state) {
-			if (field !== undefined) {
-				try {
-					return field
-						.toString()
-						.toLowerCase()
-						.includes(state.searchValue.toLowerCase());
-				} catch (e) {
-					return false;
-				}
-			} else return false;
-		};
-
 		// Filter according to searchValue
 		if (state.searchValue === "") list = state.movies;
 		else {
 			list = state.movies.filter(movie => {
 				let result = false;
-				result = result || checkField(movie.title, state);
-				result = result || checkField(movie.releaseyear, state);
-				result = result || checkField(movie.releasedate, state);
-				result = result || checkField(movie.genre, state);
-				result = result || checkField(movie.writer, state);
-				result = result || checkField(movie.actors, state);
-				result = result || checkField(movie.directors, state);
+				result = result || checkField(state.searchValue, movie.title, state);
+				result = result || checkField(state.searchValue, movie.releaseyear, state);
+				result = result || checkField(state.searchValue, movie.releasedate, state);
+				result = result || checkField(state.searchValue, movie.genre, state);
+				result = result || checkField(state.searchValue, movie.writer, state);
+				result = result || checkField(state.searchValue, movie.actors, state);
+				result = result || checkField(state.searchValue, movie.directors, state);
 				return result;
 			});
 			state.currentPageNumber = 1;
@@ -223,6 +241,21 @@ export const getters = {
 				return a.googlehits - b.googlehits;
 			});
 
+		// Filter according to searchValue
+		if (state.searchValue === "") list = state.actors;
+		else {
+			list = state.actors.filter(actor => {
+				let result = false;
+				result = result || checkField(state.searchValue, actor.name, state);
+				result = result || checkField(state.searchValue, actor.moviecount, state);
+				result = result || checkField(state.searchValue, actor.rating, state);
+				result = result || checkField(state.searchValue, actor.googlehits, state);
+				return result;
+			});
+			state.currentPageNumber = 1;
+		}
+		state.totalNumberOfActorsWithSearch = list.length;
+
 		// If order is "Descending"
 		if (state.sortingOrder === 1) list.reverse();
 
@@ -250,6 +283,15 @@ export const getters = {
 	developers(state) {
 		return state.developers;
 	},
+	api(state) {
+		return state.api;
+	},
+	username(state) {
+		return state.username;
+	},
+	authToken(state) {
+		return state.authToken;
+	},
 };
 
 export const actions = {
@@ -272,15 +314,16 @@ export const actions = {
 	 * @param page The page to fetch. The index starts from 0. Default value is 0.
 	 * @param size The number of movies to fetch from the databse. Default value is 20.
 	 */
-	fetchMovies(toolkit, page = null, size = null) {
+	fetchMovies(toolkit, { token, page = null, size = null }) {
 		if (lastMoviesFetch.page !== page || lastMoviesFetch.size !== size) {
-			let request = `http://${WEBSERVICE_MOVIES_ADDRESS}:${WEBSERVICE_MOVIES_PORT}/movies?`;
+			let request = "/movies?";
 			if (page !== null && size !== null) request += `page=${page}&size=${size}&`;
 			request += `sort=title`;
 
-			fetch(request)
-				.then(response => response.json())
-				.then(movie_entries => {
+			apiConnection
+				.get(request, { headers: { Authorization: `Bearer ${token}` } })
+				.then(response => {
+					let movie_entries = response.data;
 					return movie_entries.map(movie_entry => {
 						let movie = {
 							id: movie_entry.movieid,
@@ -307,14 +350,15 @@ export const actions = {
 	onMoviesChanged(toolkit, payload) {
 		toolkit.commit("setMovies", payload);
 	},
-	fetchActors(toolkit, page = null, size = null) {
+	fetchActors(toolkit, { token, page = null, size = null }) {
 		if (lastActorsFetch.page !== page || lastActorsFetch.size !== size) {
-			let request = `http://${WEBSERVICE_ACTORS_ADDRESS}:${WEBSERVICE_ACTORS_PORT}/actors`;
+			let request = "/actors";
 			if (page !== null && size !== null) request += `?page=${page}&size=${size}`;
 
-			fetch(request)
-				.then(response => response.json())
-				.then(actor_entries => {
+			apiConnection
+				.get(request, { headers: { Authorization: `Bearer ${token}` } })
+				.then(response => {
+					let actor_entries = response.data;
 					return actor_entries.map(actor_entry => {
 						return {
 							id: actor_entry.actorid,
@@ -340,6 +384,22 @@ export const actions = {
 	},
 	onBatchSizeChanged(toolkit, payload) {
 		toolkit.commit("setBatchSize", payload);
+	},
+	login(toolkit, payload) {
+		apiConnection
+			.post("/login", payload)
+			.then(response => {
+				toolkit.commit("setAuthToken", response.data);
+				toolkit.commit("setUsername", payload.login);
+			})
+			.catch(error => console.log(error));
+	},
+	logout(toolkit, _) {
+		toolkit.commit("setAuthToken", null);
+		toolkit.commit("setUsername", null);
+	},
+	onAuthTokenChanged(toolkit, payload) {
+		toolkit.commit("setAuthToken", payload);
 	},
 };
 
@@ -379,5 +439,11 @@ export const mutations = {
 		if (typeof p !== "number") p = parseInt(p);
 
 		if (!isNaN(p)) state.batchSize = p;
+	},
+	setUsername(state, payload) {
+		state.username = payload;
+	},
+	setAuthToken(state, payload) {
+		state.authToken = payload;
 	},
 };

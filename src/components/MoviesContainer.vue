@@ -5,8 +5,11 @@
 		</div>
 
 		<div class="row justify-content-center" v-else>
-			<Card additional-card-class="border-warning bg-warning empty-movie" title="Aucun film trouvé 😕">
+			<Card v-if="this.$store.getters.searchValue !== ''" additional-card-class="border-warning bg-warning empty-movie" title="Aucun film trouvé 😕">
 				<img src="../assets/img/clapper.png" alt="Aucun film disponible" title="Aucun film disponible" />
+			</Card>
+			<Card v-else additional-card-class="border-warning bg-warning empty-movie" title="Chargement ⏳">
+				<img src="../assets/img/clapper.png" alt="Chargement..." title="Chargement..." />
 			</Card>
 		</div>
 
@@ -29,7 +32,7 @@ import Card from "./Card";
 export default {
 	name: "MoviesContainer",
 	created() {
-		this.$store.dispatch("fetchMovies");
+		this.$store.dispatch("fetchMovies", { token: this.$store.getters.authToken });
 	},
 	components: { Movie, Card },
 	methods: {
@@ -56,7 +59,6 @@ export default {
 	},
 	computed: {
 		currentPageNumber() {
-			console.log("currentPageNumber> ", this.$store.getters.currentPageNumber);
 			return this.$store.getters.currentPageNumber;
 		},
 		batchSize() {
