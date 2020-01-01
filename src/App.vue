@@ -2,17 +2,22 @@
 	<div id="app">
 		<PolywoodBanner :enable-parallax="false" />
 		<div class="component-separator"></div>
-		<NavBar/>
 		
-		<div class="component-separator"></div>
+		<LoginContainer v-if="this.authToken === undefined || this.authToken === null"/>
 		
-		<FilterBar v-if="this.$store.getters.navigationId !== 2"/>
-		
-		<div class="component-separator"></div>
-		
-		<transition name="component-fade" mode="out-in">
-			<component v-bind:is="view"></component>
-		</transition>
+		<div v-else>
+			<NavBar/>
+			
+			<div class="component-separator"></div>
+			
+			<FilterBar v-if="this.$store.getters.navigationId !== 2"/>
+			
+			<div class="component-separator"></div>
+			
+			<transition name="component-fade" mode="out-in">
+				<component v-bind:is="view"></component>
+			</transition>
+		</div>
 		
 		<FooterBanner/>
 	</div>
@@ -42,16 +47,20 @@ export default {
 	},
 	computed: {
 		view() {
+			if (this.authToken === null || this.authToken === undefined)
+				return LoginContainer;
+			
 			switch (this.$store.getters.navigationId) {
 				case 0:
 					return MoviesContainer;
 				case 1:
 					return ActorsContainer;
-				case 2:
-					return LoginContainer;
 				default:
 					return AboutUsContainer;
 			}
+		},
+		authToken() {
+			return this.$store.getters.authToken;
 		},
 	},
 };

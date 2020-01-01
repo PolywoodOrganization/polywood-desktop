@@ -1,6 +1,7 @@
 <template>
 	<div class="container" id="login-container">
 		<div v-if="this.authToken === undefined || this.authToken === null">
+			<p>Please login to continue</p>
 			<form class="row" @submit.prevent="onLoginClicked">
 				<label for="login-username" class="col-12">Pseudonyme</label>
 				<input type="text" class="form-control col-12" id="login-username" name="login-username" placeholder="Nom d'utilisateur" v-model="username"/>
