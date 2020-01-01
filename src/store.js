@@ -15,6 +15,14 @@ let lastMoviesFetch = {
 	size: undefined,
 };
 
+/**
+ * Boolean that indicates if the actors are already fetched
+ */
+let lastActorsFetch = {
+	page: undefined,
+	size: undefined,
+};
+
 const WEBSERVICE_MOVIES_ADDRESS = "localhost";
 const WEBSERVICE_MOVIES_PORT = 8081;
 const WEBSERVICE_ACTORS_ADDRESS = "localhost";
@@ -47,36 +55,7 @@ export const state = {
 
 	movies: [],
 
-	actors: [
-		{
-			id: 1,
-			name: "Acteur 1",
-			moviecount: 25,
-			rating: 4,
-			googlehits: 580,
-		},
-		{
-			id: 2,
-			name: "Acteur 2",
-			moviecount: 12,
-			rating: 2,
-			googlehits: 0,
-		},
-		{
-			id: 3,
-			name: "Acteur 3",
-			moviecount: 102,
-			rating: 7,
-			googlehits: 15890,
-		},
-		{
-			id: 4,
-			name: "Acteur 4",
-			moviecount: 0,
-			rating: 0,
-			googlehits: 0,
-		},
-	],
+	actors: [],
 
 	/**
 	 * When the search value is not empty, the total number of movies is reduced, and the new number is stored in this
@@ -247,6 +226,13 @@ export const getters = {
 		// If order is "Descending"
 		if (state.sortingOrder === 1) list.reverse();
 
+		// Take a subset of the list if `page` and `size` are valid
+		if (state.currentPageNumber !== null && state.batchSize !== null)
+			list = list.slice(
+				(state.currentPageNumber - 1) * state.batchSize,
+				state.currentPageNumber * state.batchSize
+			);
+
 		return list;
 	},
 	totalNumberOfActors(state) {
@@ -321,9 +307,31 @@ export const actions = {
 	onMoviesChanged(toolkit, payload) {
 		toolkit.commit("setMovies", payload);
 	},
-	// fetchActors(toolkit, _) {
-	// 	throw new Error("Not implemented");
-	// },
+	fetchActors(toolkit, page = null, size = null) {
+		if (lastActorsFetch.page !== page || lastActorsFetch.size !== size) {
+			let request = `http://${WEBSERVICE_ACTORS_ADDRESS}:${WEBSERVICE_ACTORS_PORT}/actors`;
+			if (page !== null && size !== null) request += `?page=${page}&size=${size}`;
+
+			fetch(request)
+				.then(response => response.json())
+				.then(actor_entries => {
+					return actor_entries.map(actor_entry => {
+						return {
+							id: actor_entry.actorid,
+							name: actor_entry.name,
+							moviecount: parseInt(actor_entry.moviecount),
+							rating: parseInt(actor_entry.ratingsum),
+							googlehits: parseInt(actor_entry.googlehits),
+						};
+					});
+				})
+				.then(actors => {
+					lastActorsFetch["page"] = page;
+					lastActorsFetch["size"] = size;
+					return toolkit.commit("setActors", actors);
+				});
+		}
+	},
 	onActorsChanged(toolkit, payload) {
 		toolkit.commit("setActors", payload);
 	},
