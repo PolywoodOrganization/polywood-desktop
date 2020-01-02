@@ -10,7 +10,7 @@
 			
 			<div class="component-separator"></div>
 			
-			<FilterBar v-if="this.$store.getters.navigationId !== 2"/>
+			<FilterBar v-if="this.$store.getters.navigationId !== 2 && this.$store.getters.navigationId !== 4"/>
 			
 			<div class="component-separator"></div>
 			
@@ -28,6 +28,7 @@ import PolywoodBanner from "./components/PolywoodBanner";
 import NavBar from "./components/NavBar";
 import MoviesContainer from "./components/MoviesContainer";
 import ActorsContainer from "./components/ActorsContainer";
+import FavoritesContainer from "./components/FavoritesContainer";
 import AboutUsContainer from "./components/AboutUsContainer";
 import FooterBanner from "./components/FooterBanner";
 import FilterBar from "./components/FilterBar";
@@ -41,6 +42,7 @@ export default {
 		AboutUsContainer,
 		ActorsContainer,
 		MoviesContainer,
+		FavoritesContainer,
 		LoginContainer,
 		PolywoodBanner,
 		NavBar,
@@ -55,6 +57,8 @@ export default {
 					return MoviesContainer;
 				case 1:
 					return ActorsContainer;
+				case 4:
+					return FavoritesContainer;
 				default:
 					return AboutUsContainer;
 			}

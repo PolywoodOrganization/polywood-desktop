@@ -77,6 +77,8 @@ export const state = {
 
 	actors: [],
 
+	favorites: [],
+
 	/**
 	 * When the search value is not empty, the total number of movies is reduced, and the new number is stored in this
 	 * variable.
@@ -292,6 +294,9 @@ export const getters = {
 	authToken(state) {
 		return state.authToken;
 	},
+	favorites(state) {
+		return state.favorites;
+	},
 };
 
 export const actions = {
@@ -376,8 +381,32 @@ export const actions = {
 				});
 		}
 	},
+	fetchFavorites(toolkit, { token }) {
+			let request = "/favorites";
+
+			apiConnection
+				.get(request, { headers: { Authorization: `Bearer ${token}` } })
+				.then(response => {
+					return response.data;
+				})
+				.then(favorites => {
+					return toolkit.commit("setFavorites", favorites);
+				});
+	},
+	fetchMovieById(toolkit, { token , id}) {
+		let request = "/movies/" + id;
+
+		return apiConnection
+			.get(request, {headers: {Authorization: `Bearer ${token}`}})
+			.then(response => {
+				return response.data;
+			});
+	},
 	onActorsChanged(toolkit, payload) {
 		toolkit.commit("setActors", payload);
+	},
+	onFavoritesChanged(toolkit, payload) {
+		toolkit.commit("setFavorites", payload);
 	},
 	onCurrentPageNumberChanged(toolkit, payload) {
 		toolkit.commit("setCurrentPageNumber", payload);
@@ -424,6 +453,9 @@ export const mutations = {
 	},
 	setActors(state, payload) {
 		state.actors = payload;
+	},
+	setFavorites(state, payload) {
+		state.favorites = payload;
 	},
 	setTotalNumberOfActorsWithSearch(state, payload) {
 		state.totalNumberOfActorsWithSearch = payload;
