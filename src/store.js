@@ -4,7 +4,8 @@ async function getImageUrl(movie) {
 	fetch(`http://localhost:8081/movies/image/${movie["id"]}`)
 		.then(response => response.text())
 		.then(url => {
-			movie["cover"] = url;
+            if(url !=  null)
+                movie["cover"] = url;
 			return null;
 		});
 }
@@ -406,6 +407,46 @@ export const actions = {
 				return toolkit.commit("setFilmographyMovies", movies);
 			});
 	},
+    fetchMoviesOfDirector(toolkit, director) {
+		apiConnection
+			.get(`/movies/director/${director}`, {
+				headers: { Authorization: `Bearer ${toolkit.getters.authToken}` },
+			})
+			.then(response => {
+				let movie_entries = response.data;
+				let movies = [];
+				movie_entries.forEach(movie_entry => {
+					let found = false;
+					for (let m in toolkit.getters.movies) {
+						m = toolkit.getters.movies[m];
+						if (m.id.toLowerCase() === movie_entry.movieid.toLowerCase()) {
+							movies.push(m);
+							found = true;
+							break;
+						}
+					}
+					if (!found) {
+						let movie = {
+							id: movie_entry.movieid,
+							title: movie_entry.title,
+							cover: "",
+							releaseyear: parseInt(movie_entry.releaseyear),
+							releasedate: movie_entry.releasedate,
+							genre: movie_entry.genre,
+							writer: movie_entry.writer,
+							actors: movie_entry.actors,
+							directors: movie_entry.directors,
+						};
+						getImageUrl(movie);
+						movies.push(movie);
+					}
+				});
+				return movies;
+			})
+			.then(movies => {
+				return toolkit.commit("setFilmographyMovies", movies);
+			});
+	},
 	showFilmographyBox(toolkit, _) {
 		toolkit.commit("setIsFilmographyBoxDisplayed", true);
 	},
@@ -444,7 +485,7 @@ export const actions = {
 						let movie = {
 							id: movie_entry.movieid,
 							title: movie_entry.title,
-							cover: "",
+							cover: "./assets/svg/no-image.svg",
 							releaseyear: parseInt(movie_entry.releaseyear),
 							releasedate: movie_entry.releasedate,
 							genre: movie_entry.genre,

@@ -5,6 +5,8 @@
 		<p class="card-text"><b>Acteurs :</b> <span v-html="parseActors"></span></p>
 		<p class="card-text"><b>Directeurs :</b> <span v-for="director in directorsArray" v-bind:key="director">{{director}}<button title="Voir ses réalisations" @click="onDirectorClicked(director)" class="bg-transparent border-0">🎥</button></span></p>
 		<button v-if="this.displayCastingButton" class="btn btn-primary" @click="onCastingClicked">Voir casting</button>
+        <br>
+        <button v-if="this.displayDirectorButton" class="btn btn-secondary" @click="onDirectorsClicked">Du même directeur</button>
 		<button class="fav-heart" v-if="isUserFavorite" @click="removeFromFavorites">❤️</button>
 		<button class="fav-heart" v-else  @click="addToFavorite">❤</button>
 	</Card>
@@ -35,7 +37,7 @@ export default {
 		},
 		cover: {
 			type: String,
-			default: '',
+			default: "./assets/svg/no-image.svg",
 		},
 		releaseyear: {
 			type: Number,
@@ -56,6 +58,11 @@ export default {
 			type: String,
 		},
 		displayCastingButton: {
+			type: Boolean,
+			default: true,
+			required: false,
+		},
+		displayDirectorButton: {
 			type: Boolean,
 			default: true,
 			required: false,
@@ -117,6 +124,10 @@ export default {
 		onCastingClicked() {
 			this.$store.dispatch("fetchCastingActors", this.id);
 			this.$store.dispatch("showCastingBox");
+		},
+        onDirectorsClicked() {
+			this.$store.dispatch("fetchMoviesOfDirector", this.directorsArray[0]);
+            this.$store.dispatch("showFilmographyBox");
 		},
 	},
 	computed: {
