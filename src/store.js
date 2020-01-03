@@ -515,11 +515,52 @@ export const actions = {
 				return response.data;
 			});
 	},
+	addNewFavorite(toolkit, { token , toAdd}) {
+		let request = "/favorites";
+
+		return apiConnection
+			.post(request, toAdd, {headers: {Authorization: `Bearer ${token}`}})
+			.then(response => {
+				return response.data;
+			})
+			.then(
+				fav => {
+					return toolkit.commit("addFavorite", fav);
+				}
+			);
+	},
+    removeMovieFavorite(toolkit, { token , idMovie}) {
+		let request = "/favorites/movie/" + idMovie;
+
+		return apiConnection
+			.delete(request, {headers: {Authorization: `Bearer ${token}`}})
+			.then(response => {
+				return response.data;
+			})
+			.then(
+				toolkit.commit("removeMovieFromFavorite", idMovie)
+			)
+	},
+    removeSpecificFavorite(toolkit, { token , idFav}) {
+		let request = "/favorites/" + idFav;
+
+		return apiConnection
+			.delete(request, {headers: {Authorization: `Bearer ${token}`}})
+			.then(response => {
+				return response.data;
+			})
+			.then(
+				toolkit.commit("removeFavorite", idFav)
+			)
+	},
 	onActorsChanged(toolkit, payload) {
 		toolkit.commit("setActors", payload);
 	},
 	onFavoritesChanged(toolkit, payload) {
 		toolkit.commit("setFavorites", payload);
+	},
+	onNewFavorite(toolkit, payload) {
+		toolkit.commit("addFavorite", payload);
 	},
 	onCurrentPageNumberChanged(toolkit, payload) {
 		toolkit.commit("setCurrentPageNumber", payload);
@@ -528,13 +569,17 @@ export const actions = {
 		toolkit.commit("setBatchSize", payload);
 	},
 	login(toolkit, payload) {
-		apiConnection
+		return apiConnection
 			.post("/login", payload)
 			.then(response => {
 				toolkit.commit("setAuthToken", response.data);
 				toolkit.commit("setUsername", payload.login);
+				return true;
 			})
-			.catch(error => console.log(error));
+			.catch(error => {
+                console.log(error);
+                return false;
+            });
 	},
 	logout(toolkit, _) {
 		toolkit.commit("setAuthToken", null);
@@ -581,6 +626,19 @@ export const mutations = {
 	},
 	setFavorites(state, payload) {
 		state.favorites = payload;
+	},
+	addFavorite(state, payload) {
+		state.favorites.push(payload);
+	},
+    removeMovieFromFavorite(state, payload) {
+		let index = state.favorites.findIndex(fav => fav.idmovie === payload);
+		if(index >= 0)
+			state.favorites.splice(index, 1);
+	},
+    removeFavorite(state, payload) {
+		let index = state.favorites.findIndex(fav => fav.idfavorite === payload);
+		if(index >= 0)
+			state.favorites.splice(index, 1);
 	},
 	setTotalNumberOfActorsWithSearch(state, payload) {
 		state.totalNumberOfActorsWithSearch = payload;
