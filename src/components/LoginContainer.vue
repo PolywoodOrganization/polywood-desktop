@@ -1,7 +1,8 @@
 <template>
 	<div class="container" id="login-container">
 		<div v-if="this.authToken === undefined || this.authToken === null">
-			<p>Please login to continue</p>
+			<p>Veuillez vous connecter pour poursuivre</p>
+			<p v-if="invalidLogin" class="error"> Pseudonyme ou mot de passe incorrect</p>
 			<form class="row" @submit.prevent="onLoginClicked">
 				<label for="login-username" class="col-12">Pseudonyme</label>
 				<input type="text" class="form-control col-12" id="login-username" name="login-username" placeholder="Nom d'utilisateur" v-model="username"/>
@@ -26,12 +27,24 @@ export default {
 		return {
 			username: "",
 			password: "",
+            invalidLogin: false
 		};
 	},
 	methods: {
 		onLoginClicked() {
-			if (this.authToken === undefined || this.authToken === null)
-				this.$store.dispatch("login", { login: this.username, password: this.password });
+			if (this.authToken === undefined || this.authToken === null){
+                this.$store.dispatch("login", { login: this.username, password: this.password }).then( success => {
+                    if(!success){
+                            this.invalidLogin = true;
+                            setTimeout(this.clearError, 2000);
+                        }
+                    }
+                );
+			}
+
+		},
+		clearError(){
+            this.invalidLogin = false
 		},
 		onLogoutClicked() {
 			this.$store.dispatch("logout");
@@ -60,6 +73,10 @@ export default {
 		input[type="submit"], input[type="button"], button {
 			margin-top: 10px;
 		}
+	}
+	
+	.error{
+		color: #f94c30;
 	}
 }
 </style>

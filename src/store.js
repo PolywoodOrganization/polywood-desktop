@@ -444,13 +444,17 @@ export const actions = {
 		toolkit.commit("setBatchSize", payload);
 	},
 	login(toolkit, payload) {
-		apiConnection
+		return apiConnection
 			.post("/login", payload)
 			.then(response => {
 				toolkit.commit("setAuthToken", response.data);
 				toolkit.commit("setUsername", payload.login);
+				return true;
 			})
-			.catch(error => console.log(error));
+			.catch(error => {
+                console.log(error);
+                return false;
+            });
 	},
 	logout(toolkit, _) {
 		toolkit.commit("setAuthToken", null);
