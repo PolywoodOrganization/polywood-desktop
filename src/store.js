@@ -402,11 +402,28 @@ export const actions = {
 				return response.data;
 			});
 	},
+	addNewFavorite(toolkit, { token , toAdd}) {
+		let request = "/favorites";
+
+		return apiConnection
+			.post(request, toAdd, {headers: {Authorization: `Bearer ${token}`}})
+			.then(response => {
+				return response.data;
+			})
+			.then(
+				fav => {
+					return toolkit.commit("addFavorite", fav);
+				}
+			);
+	},
 	onActorsChanged(toolkit, payload) {
 		toolkit.commit("setActors", payload);
 	},
 	onFavoritesChanged(toolkit, payload) {
 		toolkit.commit("setFavorites", payload);
+	},
+	onNewFavorite(toolkit, payload) {
+		toolkit.commit("addFavorite", payload);
 	},
 	onCurrentPageNumberChanged(toolkit, payload) {
 		toolkit.commit("setCurrentPageNumber", payload);
@@ -456,6 +473,9 @@ export const mutations = {
 	},
 	setFavorites(state, payload) {
 		state.favorites = payload;
+	},
+	addFavorite(state, payload) {
+		state.favorites.push(payload);
 	},
 	setTotalNumberOfActorsWithSearch(state, payload) {
 		state.totalNumberOfActorsWithSearch = payload;
