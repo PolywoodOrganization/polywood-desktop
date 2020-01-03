@@ -35,7 +35,7 @@
             }
         },
         created() {
-            this.$store.dispatch("fetchMovieById", { token: this.$store.getters.authToken , id: this.idmovie}).then( movie =>
+            this.$store.dispatch("fetchMovieById", this.idmovie).then( movie =>
                 this.movie = movie
             );
         },

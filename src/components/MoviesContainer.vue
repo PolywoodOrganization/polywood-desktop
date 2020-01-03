@@ -33,7 +33,7 @@ export default {
 	name: "MoviesContainer",
 	created() {
         this.$store.dispatch("fetchFavorites", {token: this.$store.getters.authToken});
-        this.$store.dispatch("fetchMovies", { token: this.$store.getters.authToken });
+        this.$store.dispatch("fetchMovies");
 	},
 	components: { Movie, Card },
 	methods: {

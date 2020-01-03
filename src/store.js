@@ -56,6 +56,26 @@ export const state = {
 	 */
 	navigationId: 0,
 
+	/**
+	 * Tell if the dialog box for casting must be displayed or not
+	 */
+	isCastingBoxDisplayed: false,
+
+	/**
+	 * Tell if the dialog box for filmography must be displayed or not
+	 */
+	isFilmographyBoxDisplayed: false,
+
+	/**
+	 * Buffer that contains all actors to display when displaying the casting dialog box.
+	 */
+	castingActors: [],
+
+	/**
+	 * Buffer that contains all movies to display when displaying the filmography dialog box.
+	 */
+	filmographyMovies: [],
+
 	searchValue: "",
 
 	/**
@@ -156,6 +176,18 @@ export const state = {
 export const getters = {
 	navigationId(state) {
 		return state.navigationId;
+	},
+	isCastingBoxDisplayed(state) {
+		return state.isCastingBoxDisplayed;
+	},
+	isFilmographyBoxDisplayed(state) {
+		return state.isFilmographyBoxDisplayed;
+	},
+	castingActors(state) {
+		return state.castingActors;
+	},
+	filmographyMovies(state) {
+		return state.filmographyMovies;
 	},
 	searchValue(state) {
 		return state.searchValue;
@@ -303,6 +335,83 @@ export const actions = {
 	onNavigationIdChanged(toolkit, payload) {
 		toolkit.commit("setNavigationId", payload);
 	},
+	showCastingBox(toolkit, _) {
+		toolkit.commit("setIsCastingBoxDisplayed", true);
+	},
+	hideCastingBox(toolkit, _) {
+		toolkit.commit("setIsCastingBoxDisplayed", false);
+	},
+	onCastingActorsChanged(toolkit, payload) {
+		toolkit.commit("setCastingActors", payload);
+	},
+	fetchCastingActors(toolkit, movieId) {
+		apiConnection
+			.get(`/movies/casting/${movieId}`, { headers: { Authorization: `Bearer ${toolkit.getters.authToken}` } })
+			.then(response => {
+				let actor_entries = response.data;
+				return actor_entries.map(actor_entry => {
+					return {
+						id: actor_entry.actorid,
+						name: actor_entry.name,
+						moviecount: parseInt(actor_entry.moviecount),
+						rating: parseInt(actor_entry.ratingsum),
+						googlehits: parseInt(actor_entry.googlehits),
+					};
+				});
+			})
+			.then(actors => {
+				return toolkit.commit("setCastingActors", actors);
+			});
+	},
+	onFilmographyMoviesChanged(toolkit, payload) {
+		toolkit.commit("setFilmographyMovies", payload);
+	},
+	fetchFilmographyMovies(toolkit, actorId) {
+		apiConnection
+			.get(`/actors/filmography/${actorId}`, {
+				headers: { Authorization: `Bearer ${toolkit.getters.authToken}` },
+			})
+			.then(response => {
+				let movie_entries = response.data;
+				let movies = [];
+				movie_entries.forEach(movie_entry => {
+					let found = false;
+					for (let m in toolkit.getters.movies) {
+						m = toolkit.getters.movies[m];
+						if (m.id.toLowerCase() === movie_entry.movieid.toLowerCase()) {
+							movies.push(m);
+							found = true;
+							break;
+						}
+					}
+					if (!found) {
+						let movie = {
+							id: movie_entry.movieid,
+							title: movie_entry.title,
+							cover: "",
+							releaseyear: parseInt(movie_entry.releaseyear),
+							releasedate: movie_entry.releasedate,
+							genre: movie_entry.genre,
+							writer: movie_entry.writer,
+							actors: movie_entry.actors,
+							directors: movie_entry.directors,
+						};
+						getImageUrl(movie);
+						movies.push(movie);
+					}
+				});
+				return movies;
+			})
+			.then(movies => {
+				return toolkit.commit("setFilmographyMovies", movies);
+			});
+	},
+	showFilmographyBox(toolkit, _) {
+		toolkit.commit("setIsFilmographyBoxDisplayed", true);
+	},
+	hideFilmographyBox(toolkit, _) {
+		toolkit.commit("setIsFilmographyBoxDisplayed", false);
+	},
 	onSearchValueChanged(toolkit, payload) {
 		toolkit.commit("setSearchValue", payload);
 		toolkit.commit("setCurrentPageNumber", 1);
@@ -316,17 +425,19 @@ export const actions = {
 	/**
 	 * Fetch the movie from the database and store the result in the state.
 	 * @param toolkit The Vuex toolkit.
-	 * @param page The page to fetch. The index starts from 0. Default value is 0.
-	 * @param size The number of movies to fetch from the databse. Default value is 20.
+	 * @param args Arguments: "page": The page to fetch. The index starts from 0. Default value is 0. "size": The number
+	 * of movies to fetch from the databse. Default value is 20.
 	 */
-	fetchMovies(toolkit, { token, page = null, size = null }) {
+	fetchMovies(toolkit, args) {
+		let page = args != null && args.hasOwnProperty("page") ? args.page : null;
+		let size = args != null && args.hasOwnProperty("size") ? args.size : null;
 		if (lastMoviesFetch.page !== page || lastMoviesFetch.size !== size) {
 			let request = "/movies?";
 			if (page !== null && size !== null) request += `page=${page}&size=${size}&`;
 			request += `sort=title`;
 
 			apiConnection
-				.get(request, { headers: { Authorization: `Bearer ${token}` } })
+				.get(request, { headers: { Authorization: `Bearer ${toolkit.getters.authToken}` } })
 				.then(response => {
 					let movie_entries = response.data;
 					return movie_entries.map(movie_entry => {
@@ -355,13 +466,15 @@ export const actions = {
 	onMoviesChanged(toolkit, payload) {
 		toolkit.commit("setMovies", payload);
 	},
-	fetchActors(toolkit, { token, page = null, size = null }) {
+	fetchActors(toolkit, args) {
+		let page = args != null && args.hasOwnProperty("page") ? args.page : null;
+		let size = args != null && args.hasOwnProperty("size") ? args.size : null;
 		if (lastActorsFetch.page !== page || lastActorsFetch.size !== size) {
 			let request = "/actors";
 			if (page !== null && size !== null) request += `?page=${page}&size=${size}`;
 
 			apiConnection
-				.get(request, { headers: { Authorization: `Bearer ${token}` } })
+				.get(request, { headers: { Authorization: `Bearer ${toolkit.getters.authToken}` } })
 				.then(response => {
 					let actor_entries = response.data;
 					return actor_entries.map(actor_entry => {
@@ -381,23 +494,23 @@ export const actions = {
 				});
 		}
 	},
-	fetchFavorites(toolkit, { token }) {
-			let request = "/favorites";
+	fetchFavorites(toolkit) {
+		let request = "/favorites";
 
-			apiConnection
-				.get(request, { headers: { Authorization: `Bearer ${token}` } })
-				.then(response => {
-					return response.data;
-				})
-				.then(favorites => {
-					return toolkit.commit("setFavorites", favorites);
-				});
+		apiConnection
+			.get(request, { headers: { Authorization: `Bearer ${toolkit.getters.authToken}` } })
+			.then(response => {
+				return response.data;
+			})
+			.then(favorites => {
+				return toolkit.commit("setFavorites", favorites);
+			});
 	},
-	fetchMovieById(toolkit, { token , id}) {
-		let request = "/movies/" + id;
+	fetchMovieById(toolkit, id) {
+		let request = `/movies/${id}`;
 
 		return apiConnection
-			.get(request, {headers: {Authorization: `Bearer ${token}`}})
+			.get(request, { headers: { Authorization: `Bearer ${toolkit.getters.authToken}` } })
 			.then(response => {
 				return response.data;
 			});
@@ -480,6 +593,18 @@ export const actions = {
 export const mutations = {
 	setNavigationId(state, payload) {
 		state.navigationId = payload;
+	},
+	setIsCastingBoxDisplayed(state, payload) {
+		state.isCastingBoxDisplayed = payload;
+	},
+	setIsFilmographyBoxDisplayed(state, payload) {
+		state.isFilmographyBoxDisplayed = payload;
+	},
+	setCastingActors(state, payload) {
+		state.castingActors = payload;
+	},
+	setFilmographyMovies(state, payload) {
+		state.filmographyMovies = payload;
 	},
 	setSearchValue(state, payload) {
 		state.searchValue = payload;

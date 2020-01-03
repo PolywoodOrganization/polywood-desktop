@@ -5,6 +5,12 @@
 		
 		<LoginContainer v-if="this.authToken === undefined || this.authToken === null"/>
 		
+		<DialogBox v-else-if="isCastingBoxDisplayed" @closed="hideCastingBox">
+			<Actor class="actor" v-for="actor in this.$store.getters.castingActors" v-bind="actor" :key="actor.id" :display-filmography-button="false"/>
+		</DialogBox>
+		<DialogBox v-else-if="isFilmographyBoxDisplayed" @closed="hideFilmographyBox">
+			<Movie class="movie" v-for="movie in this.$store.getters.filmographyMovies" v-bind="movie" :key="movie.id" :display-casting-button="false"/>
+		</DialogBox>
 		<div v-else>
 			<NavBar/>
 			
@@ -33,10 +39,16 @@ import AboutUsContainer from "./components/AboutUsContainer";
 import FooterBanner from "./components/FooterBanner";
 import FilterBar from "./components/FilterBar";
 import LoginContainer from "./components/LoginContainer";
+import DialogBox from "./components/DialogBox";
+import Actor from "./components/Actor";
+import Movie from "./components/Movie";
 
 export default {
 	name: "app",
 	components: {
+		Movie,
+		Actor,
+		DialogBox,
 		FilterBar,
 		FooterBanner,
 		AboutUsContainer,
@@ -46,6 +58,20 @@ export default {
 		LoginContainer,
 		PolywoodBanner,
 		NavBar,
+	},
+	methods: {
+		showCastingBox() {
+			this.$store.dispatch("showCastingBox");
+		},
+		hideCastingBox() {
+			this.$store.dispatch("hideCastingBox");
+		},
+		showFilmographyBox() {
+			this.$store.dispatch("showFilmographyBox");
+		},
+		hideFilmographyBox() {
+			this.$store.dispatch("hideFilmographyBox");
+		},
 	},
 	computed: {
 		view() {
@@ -65,6 +91,12 @@ export default {
 		},
 		authToken() {
 			return this.$store.getters.authToken;
+		},
+		isCastingBoxDisplayed() {
+			return this.$store.getters.isCastingBoxDisplayed;
+		},
+		isFilmographyBoxDisplayed() {
+			return this.$store.getters.isFilmographyBoxDisplayed;
 		},
 	},
 };

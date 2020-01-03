@@ -4,6 +4,7 @@
 		<p class="card-text"><b>Sortie :</b> {{releaseyear}}</p>
 		<p class="card-text"><b>Acteurs :</b> <span v-html="parseActors"></span></p>
 		<p class="card-text"><b>Directeurs :</b> <span v-html="parseDirectors"></span></p>
+		<button v-if="this.displayCastingButton" class="btn btn-primary" @click="onCastingClicked">Voir casting</button>
 		<button class="fav-heart" v-if="isUserFavorite" @click="removeFromFavorites">❤️</button>
 		<button class="fav-heart" v-else  @click="addToFavorite">❤</button>
 	</Card>
@@ -54,6 +55,11 @@ export default {
 		directors: {
 			type: String,
 		},
+		displayCastingButton: {
+			type: Boolean,
+			default: true,
+			required: false,
+		},
 	},
 	methods: {
 		onGenreClicked(g) {
@@ -102,6 +108,10 @@ export default {
 				default:
 					return "primary";
 			}
+		},
+		onCastingClicked() {
+			this.$store.dispatch("fetchCastingActors", this.id);
+			this.$store.dispatch("showCastingBox");
 		},
 	},
 	computed: {
