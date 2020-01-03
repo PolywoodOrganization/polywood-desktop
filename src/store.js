@@ -494,7 +494,7 @@ export const actions = {
 				});
 		}
 	},
-	fetchFavorites(toolkit) {
+	fetchFavorites(toolkit, _) {
 		let request = "/favorites";
 
 		apiConnection
@@ -515,43 +515,37 @@ export const actions = {
 				return response.data;
 			});
 	},
-	addNewFavorite(toolkit, { token , toAdd}) {
+	addNewFavorite(toolkit, toAdd) {
 		let request = "/favorites";
 
 		return apiConnection
-			.post(request, toAdd, {headers: {Authorization: `Bearer ${token}`}})
+			.post(request, toAdd, { headers: { Authorization: `Bearer ${toolkit.getters.authToken}` } })
 			.then(response => {
 				return response.data;
 			})
-			.then(
-				fav => {
-					return toolkit.commit("addFavorite", fav);
-				}
-			);
+			.then(fav => {
+				return toolkit.commit("addFavorite", fav);
+			});
 	},
-    removeMovieFavorite(toolkit, { token , idMovie}) {
+	removeMovieFavorite(toolkit, idMovie) {
 		let request = "/favorites/movie/" + idMovie;
 
 		return apiConnection
-			.delete(request, {headers: {Authorization: `Bearer ${token}`}})
+			.delete(request, { headers: { Authorization: `Bearer ${toolkit.getters.authToken}` } })
 			.then(response => {
 				return response.data;
 			})
-			.then(
-				toolkit.commit("removeMovieFromFavorite", idMovie)
-			)
+			.then(toolkit.commit("removeMovieFromFavorite", idMovie));
 	},
-    removeSpecificFavorite(toolkit, { token , idFav}) {
+	removeSpecificFavorite(toolkit, idFav) {
 		let request = "/favorites/" + idFav;
 
 		return apiConnection
-			.delete(request, {headers: {Authorization: `Bearer ${token}`}})
+			.delete(request, { headers: { Authorization: `Bearer ${toolkit.getters.authToken}` } })
 			.then(response => {
 				return response.data;
 			})
-			.then(
-				toolkit.commit("removeFavorite", idFav)
-			)
+			.then(toolkit.commit("removeFavorite", idFav));
 	},
 	onActorsChanged(toolkit, payload) {
 		toolkit.commit("setActors", payload);
@@ -577,9 +571,9 @@ export const actions = {
 				return true;
 			})
 			.catch(error => {
-                console.log(error);
-                return false;
-            });
+				console.log(error);
+				return false;
+			});
 	},
 	logout(toolkit, _) {
 		toolkit.commit("setAuthToken", null);
@@ -630,15 +624,13 @@ export const mutations = {
 	addFavorite(state, payload) {
 		state.favorites.push(payload);
 	},
-    removeMovieFromFavorite(state, payload) {
+	removeMovieFromFavorite(state, payload) {
 		let index = state.favorites.findIndex(fav => fav.idmovie === payload);
-		if(index >= 0)
-			state.favorites.splice(index, 1);
+		if (index >= 0) state.favorites.splice(index, 1);
 	},
-    removeFavorite(state, payload) {
+	removeFavorite(state, payload) {
 		let index = state.favorites.findIndex(fav => fav.idfavorite === payload);
-		if(index >= 0)
-			state.favorites.splice(index, 1);
+		if (index >= 0) state.favorites.splice(index, 1);
 	},
 	setTotalNumberOfActorsWithSearch(state, payload) {
 		state.totalNumberOfActorsWithSearch = payload;

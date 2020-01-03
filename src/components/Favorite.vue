@@ -41,7 +41,7 @@
         },
         methods :{
             removeFromFavorites(){
-                this.$store.dispatch("removeSpecificFavorite", { token: this.$store.getters.authToken , idFav: this.id});
+                this.$store.dispatch("removeSpecificFavorite", this.id);
 
             },
         }

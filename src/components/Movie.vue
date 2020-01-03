@@ -73,11 +73,11 @@ export default {
                 added:  new Date(),
             };
 
-            this.$store.dispatch("addNewFavorite", { token: this.$store.getters.authToken , toAdd: favToAdd});
+            this.$store.dispatch("addNewFavorite", favToAdd);
 
         },
         removeFromFavorites(){
-            this.$store.dispatch("removeMovieFavorite", { token: this.$store.getters.authToken , idMovie: this.id});
+            this.$store.dispatch("removeMovieFavorite", this.id);
 
         },
 		getGenreColorType(genre) {
