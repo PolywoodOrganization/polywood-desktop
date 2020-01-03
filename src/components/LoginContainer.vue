@@ -74,7 +74,7 @@ export default {
 			margin-top: 10px;
 		}
 	}
-	
+
 	.error{
 		color: #f94c30;
 	}

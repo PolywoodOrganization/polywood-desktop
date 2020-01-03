@@ -425,7 +425,19 @@ export const actions = {
 				return response.data;
 			})
 			.then(
-				toolkit.commit("removeFavorite", idMovie)
+				toolkit.commit("removeMovieFromFavorite", idMovie)
+			)
+	},
+    removeSpecificFavorite(toolkit, { token , idFav}) {
+		let request = "/favorites/" + idFav;
+
+		return apiConnection
+			.delete(request, {headers: {Authorization: `Bearer ${token}`}})
+			.then(response => {
+				return response.data;
+			})
+			.then(
+				toolkit.commit("removeFavorite", idFav)
 			)
 	},
 	onActorsChanged(toolkit, payload) {
@@ -493,8 +505,13 @@ export const mutations = {
 	addFavorite(state, payload) {
 		state.favorites.push(payload);
 	},
-    removeFavorite(state, payload) {
+    removeMovieFromFavorite(state, payload) {
 		let index = state.favorites.findIndex(fav => fav.idmovie === payload);
+		if(index >= 0)
+			state.favorites.splice(index, 1);
+	},
+    removeFavorite(state, payload) {
+		let index = state.favorites.findIndex(fav => fav.idfavorite === payload);
 		if(index >= 0)
 			state.favorites.splice(index, 1);
 	},
