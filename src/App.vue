@@ -6,10 +6,10 @@
 		<LoginContainer v-if="this.authToken === undefined || this.authToken === null"/>
 		
 		<DialogBox v-else-if="isCastingBoxDisplayed" @closed="hideCastingBox">
-			<Actor class="actor" v-for="actor in this.$store.getters.castingActors" v-bind="actor" :key="actor.id"/>
+			<Actor class="actor" v-for="actor in this.$store.getters.castingActors" v-bind="actor" :key="actor.id" :display-filmography-button="false"/>
 		</DialogBox>
 		<DialogBox v-else-if="isFilmographyBoxDisplayed" @closed="hideFilmographyBox">
-			<Movie class="movie" v-for="movie in this.$store.getters.filmographyMovies" v-bind="movie" :key="movie.id" />
+			<Movie class="movie" v-for="movie in this.$store.getters.filmographyMovies" v-bind="movie" :key="movie.id" :display-casting-button="false"/>
 		</DialogBox>
 		<div v-else>
 			<NavBar/>

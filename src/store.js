@@ -349,7 +349,6 @@ export const actions = {
 			.get(`/movies/casting/${movieId}`, { headers: { Authorization: `Bearer ${toolkit.getters.authToken}` } })
 			.then(response => {
 				let actor_entries = response.data;
-				console.log(actor_entries);
 				return actor_entries.map(actor_entry => {
 					return {
 						id: actor_entry.actorid,
@@ -368,7 +367,6 @@ export const actions = {
 		toolkit.commit("setFilmographyMovies", payload);
 	},
 	fetchFilmographyMovies(toolkit, actorId) {
-		// TODO: instead of created new movies, just take the ones in `movies` -- they have the cover URL, something the new don't have
 		apiConnection
 			.get(`/actors/filmography/${actorId}`, {
 				headers: { Authorization: `Bearer ${toolkit.getters.authToken}` },
@@ -376,22 +374,33 @@ export const actions = {
 			.then(response => {
 				let movie_entries = response.data;
 				let movies = [];
-				for (let movie_entry in movie_entries) {
-					if (movie_entry) console.log();
-				}
-				return movie_entries.map(movie_entry => {
-					return {
-						id: movie_entry.movieid,
-						title: movie_entry.title,
-						cover: "",
-						releaseyear: parseInt(movie_entry.releaseyear),
-						releasedate: movie_entry.releasedate,
-						genre: movie_entry.genre,
-						writer: movie_entry.writer,
-						actors: movie_entry.actors,
-						directors: movie_entry.directors,
-					};
+				movie_entries.forEach(movie_entry => {
+					let found = false;
+					for (let m in toolkit.getters.movies) {
+						m = toolkit.getters.movies[m];
+						if (m.id.toLowerCase() === movie_entry.movieid.toLowerCase()) {
+							movies.push(m);
+							found = true;
+							break;
+						}
+					}
+					if (!found) {
+						let movie = {
+							id: movie_entry.movieid,
+							title: movie_entry.title,
+							cover: "",
+							releaseyear: parseInt(movie_entry.releaseyear),
+							releasedate: movie_entry.releasedate,
+							genre: movie_entry.genre,
+							writer: movie_entry.writer,
+							actors: movie_entry.actors,
+							directors: movie_entry.directors,
+						};
+						getImageUrl(movie);
+						movies.push(movie);
+					}
 				});
+				return movies;
 			})
 			.then(movies => {
 				return toolkit.commit("setFilmographyMovies", movies);
