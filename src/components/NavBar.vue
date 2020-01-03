@@ -2,7 +2,7 @@
 	<ul>
 		<li @click="onNavClicked(0)" :class="{active: this.$store.getters.navigationId === 0}">Films</li>
 		<li @click="onNavClicked(1)" :class="{active: this.$store.getters.navigationId === 1}">Acteurs</li>
-		<li @click="onNavClicked(4)" :class="{active: this.$store.getters.navigationId === 4}">Favorites</li>
+		<li @click="onNavClicked(4)" :class="{active: this.$store.getters.navigationId === 4}">Favoris</li>
 		<li @click="onNavClicked(2)" :class="{active: this.$store.getters.navigationId === 2}">Se déconnecter</li>
 		<li @click="onNavClicked(3)" :class="{active: this.$store.getters.navigationId === 3}">A propos de Polywood</li>
 	</ul>

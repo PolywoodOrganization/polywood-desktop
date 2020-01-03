@@ -1,6 +1,6 @@
 <template>
     <div class="container favorites-container" id="favorites">
-        <h3> Your favorites </h3>
+        <h3> Vos favoris </h3>
         <div class="row justify-content-center">
             <Favorite class="favorite" v-for="fav in $store.getters.favorites" v-bind="fav" :key="fav.idfavorite"/>
         </div>
@@ -13,7 +13,8 @@
     export default {
         name: "FavoritesContainer",
         created() {
-            this.$store.dispatch("fetchFavorites", {token: this.$store.getters.authToken});
+            if(this.$store.getters.favorites.length === 0)
+                this.$store.dispatch("fetchFavorites", {token: this.$store.getters.authToken});
         },
         components: {Favorite},
         methods: {

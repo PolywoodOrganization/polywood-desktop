@@ -4,8 +4,8 @@
 		<p class="card-text"><b>Sortie :</b> {{releaseyear}}</p>
 		<p class="card-text"><b>Acteurs :</b> <span v-html="parseActors"></span></p>
 		<p class="card-text"><b>Directeurs :</b> <span v-html="parseDirectors"></span></p>
-		<button class="card-text" v-if="isNotUserFavorite" @click="addToFavorite">🤍</button>
-		<button class="card-text" v-else>❤️</button>
+		<button class="fav-heart" v-if="isUserFavorite" @click="removeFromFavorites">❤️</button>
+		<button class="fav-heart" v-else  @click="addToFavorite">❤</button>
 	</Card>
 	<Card v-else additional-card-class="border-warning bg-warning empty-movie col-lg-3 col-md-2">
 		<img src="../assets/img/clapper.png" alt="Aucun film disponible" title="Aucun film disponible"/>
@@ -70,6 +70,10 @@ export default {
             this.$store.dispatch("addNewFavorite", { token: this.$store.getters.authToken , toAdd: favToAdd});
 
         },
+        removeFromFavorites(){
+            this.$store.dispatch("addNewFavorite", { token: this.$store.getters.authToken , idMovie: this.id});
+
+        },
 		getGenreColorType(genre) {
 			switch (genre.toLowerCase()) {
 				case "drama":
@@ -101,8 +105,8 @@ export default {
 		},
 	},
 	computed: {
-        isNotUserFavorite(){
-            return !!this.$store.getters.favorites.filter(fav => fav.idmovie === this.id);
+        isUserFavorite(){
+            return this.$store.getters.favorites.filter(fav => fav.idmovie === this.id).length !== 0;
         },
 		parseActors() {
 			return this.actors.replace(/\s*\|\s*/g, ", ");
@@ -120,7 +124,11 @@ export default {
 <style lang="scss">
 @import "../assets/css/more-badges";
 
-.badge-genre {
-	margin-right: 5px;
+.fav-heart {
+    position: absolute;
+    top: 15px;
+    right: 0;
+	background-color: transparent;
+	border: none;
 }
 </style>

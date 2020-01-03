@@ -32,7 +32,8 @@ import Card from "./Card";
 export default {
 	name: "MoviesContainer",
 	created() {
-		this.$store.dispatch("fetchMovies", { token: this.$store.getters.authToken });
+        this.$store.dispatch("fetchFavorites", {token: this.$store.getters.authToken});
+        this.$store.dispatch("fetchMovies", { token: this.$store.getters.authToken });
 	},
 	components: { Movie, Card },
 	methods: {
