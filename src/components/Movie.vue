@@ -3,7 +3,7 @@
 		<p class="card-text"><b>Genre :</b> <Badge v-for="g in parseGenre" @onBadgeClicked="onGenreClicked" :title="g" :label-color="getGenreColorType(g)" :key="g"/></p>
 		<p class="card-text"><b>Sortie :</b> {{releaseyear}}</p>
 		<p class="card-text"><b>Acteurs :</b> <span v-html="parseActors"></span></p>
-		<p class="card-text"><b>Directeurs :</b> <span v-html="parseDirectors"></span></p>
+		<p class="card-text"><b>Directeurs :</b> <span v-for="director in directorsArray" v-bind:key="director">{{director}}<button title="Voir ses réalisations" @click="onDirectorClicked(director)" class="bg-transparent border-0">🎥</button></span></p>
 		<button v-if="this.displayCastingButton" class="btn btn-primary" @click="onCastingClicked">Voir casting</button>
 		<button class="fav-heart" v-if="isUserFavorite" @click="removeFromFavorites">❤️</button>
 		<button class="fav-heart" v-else  @click="addToFavorite">❤</button>
@@ -66,11 +66,16 @@ export default {
 			if (g !== undefined)
 				this.$store.dispatch("onSearchValueChanged", g);
 		},
+        onDirectorClicked(g) {
+			if (g !== undefined)
+				this.$store.dispatch("onSearchValueChanged", g);
+		},
         addToFavorite(){
             let favToAdd = {
                 idmovie: this.id,
                 commentary: "",
                 added:  new Date(),
+                idfavorite: -1
             };
 
             this.$store.dispatch("addNewFavorite", favToAdd);
@@ -127,6 +132,9 @@ export default {
 		parseGenre() {
 			return this.genre.split(/\s*\|\s*/);
 		},
+        directorsArray(){
+            return this.parseDirectors.split(",")
+        }
 	},
 };
 </script>

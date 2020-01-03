@@ -16,12 +16,7 @@
             if(this.$store.getters.favorites.length === 0)
                 this.$store.dispatch("fetchFavorites", {token: this.$store.getters.authToken});
         },
-        components: {Favorite},
-        methods: {
-            getMovie(){
-
-            }
-        }
+        components: {Favorite}
     };
 </script>
 
