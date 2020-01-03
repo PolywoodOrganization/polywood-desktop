@@ -547,6 +547,20 @@ export const actions = {
 			})
 			.then(toolkit.commit("removeFavorite", idFav));
 	},
+    updateFavorite(toolkit, { token , toUpdate}) {
+		let request = "/favorites";
+
+        return apiConnection
+            .post(request, toUpdate, {headers: {Authorization: `Bearer ${toolkit.getters.authToken}`}})
+            .then(response => {
+                return response.data;
+            })
+            .then(
+                fav => {
+                    return toolkit.commit("changeFavorite", fav);
+                }
+            );
+	},
 	onActorsChanged(toolkit, payload) {
 		toolkit.commit("setActors", payload);
 	},
@@ -631,6 +645,10 @@ export const mutations = {
 	removeFavorite(state, payload) {
 		let index = state.favorites.findIndex(fav => fav.idfavorite === payload);
 		if (index >= 0) state.favorites.splice(index, 1);
+	},
+    changeFavorite(state, payload) {
+		let index = state.favorites.findIndex(fav => fav.idfavorite === payload);
+		state.favorites.set(index, payload)
 	},
 	setTotalNumberOfActorsWithSearch(state, payload) {
 		state.totalNumberOfActorsWithSearch = payload;
