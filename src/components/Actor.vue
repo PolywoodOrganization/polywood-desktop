@@ -42,7 +42,7 @@ export default {
 	},
 	methods: {
 		onFilmographyClicked() {
-			this.$store.dispatch("fetchFilmographyMovies", { actorId: this.id, token: this.$store.getters.authToken });
+			this.$store.dispatch("fetchFilmographyMovies", this.id);
 			this.$store.dispatch("showFilmographyBox");
 		},
 	},

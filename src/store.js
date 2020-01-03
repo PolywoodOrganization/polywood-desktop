@@ -344,9 +344,9 @@ export const actions = {
 	onCastingActorsChanged(toolkit, payload) {
 		toolkit.commit("setCastingActors", payload);
 	},
-	fetchCastingActors(toolkit, { movieId, token }) {
+	fetchCastingActors(toolkit, movieId) {
 		apiConnection
-			.get(`/movies/casting/${movieId}`, { headers: { Authorization: `Bearer ${token}` } })
+			.get(`/movies/casting/${movieId}`, { headers: { Authorization: `Bearer ${toolkit.getters.authToken}` } })
 			.then(response => {
 				let actor_entries = response.data;
 				console.log(actor_entries);
@@ -367,12 +367,18 @@ export const actions = {
 	onFilmographyMoviesChanged(toolkit, payload) {
 		toolkit.commit("setFilmographyMovies", payload);
 	},
-	fetchFilmographyMovies(toolkit, { actorId, token }) {
+	fetchFilmographyMovies(toolkit, actorId) {
 		// TODO: instead of created new movies, just take the ones in `movies` -- they have the cover URL, something the new don't have
 		apiConnection
-			.get(`/actors/filmography/${actorId}`, { headers: { Authorization: `Bearer ${token}` } })
+			.get(`/actors/filmography/${actorId}`, {
+				headers: { Authorization: `Bearer ${toolkit.getters.authToken}` },
+			})
 			.then(response => {
 				let movie_entries = response.data;
+				let movies = [];
+				for (let movie_entry in movie_entries) {
+					if (movie_entry) console.log();
+				}
 				return movie_entries.map(movie_entry => {
 					return {
 						id: movie_entry.movieid,
@@ -410,17 +416,19 @@ export const actions = {
 	/**
 	 * Fetch the movie from the database and store the result in the state.
 	 * @param toolkit The Vuex toolkit.
-	 * @param page The page to fetch. The index starts from 0. Default value is 0.
-	 * @param size The number of movies to fetch from the databse. Default value is 20.
+	 * @param args Arguments: "page": The page to fetch. The index starts from 0. Default value is 0. "size": The number
+	 * of movies to fetch from the databse. Default value is 20.
 	 */
-	fetchMovies(toolkit, { token, page = null, size = null }) {
+	fetchMovies(toolkit, args) {
+		let page = args != null && args.hasOwnProperty("page") ? args.page : null;
+		let size = args != null && args.hasOwnProperty("size") ? args.size : null;
 		if (lastMoviesFetch.page !== page || lastMoviesFetch.size !== size) {
 			let request = "/movies?";
 			if (page !== null && size !== null) request += `page=${page}&size=${size}&`;
 			request += `sort=title`;
 
 			apiConnection
-				.get(request, { headers: { Authorization: `Bearer ${token}` } })
+				.get(request, { headers: { Authorization: `Bearer ${toolkit.getters.authToken}` } })
 				.then(response => {
 					let movie_entries = response.data;
 					return movie_entries.map(movie_entry => {
@@ -449,13 +457,15 @@ export const actions = {
 	onMoviesChanged(toolkit, payload) {
 		toolkit.commit("setMovies", payload);
 	},
-	fetchActors(toolkit, { token, page = null, size = null }) {
+	fetchActors(toolkit, args) {
+		let page = args != null && args.hasOwnProperty("page") ? args.page : null;
+		let size = args != null && args.hasOwnProperty("size") ? args.size : null;
 		if (lastActorsFetch.page !== page || lastActorsFetch.size !== size) {
 			let request = "/actors";
 			if (page !== null && size !== null) request += `?page=${page}&size=${size}`;
 
 			apiConnection
-				.get(request, { headers: { Authorization: `Bearer ${token}` } })
+				.get(request, { headers: { Authorization: `Bearer ${toolkit.getters.authToken}` } })
 				.then(response => {
 					let actor_entries = response.data;
 					return actor_entries.map(actor_entry => {
@@ -475,11 +485,11 @@ export const actions = {
 				});
 		}
 	},
-	fetchFavorites(toolkit, { token }) {
+	fetchFavorites(toolkit) {
 		let request = "/favorites";
 
 		apiConnection
-			.get(request, { headers: { Authorization: `Bearer ${token}` } })
+			.get(request, { headers: { Authorization: `Bearer ${toolkit.getters.authToken}` } })
 			.then(response => {
 				return response.data;
 			})
@@ -487,12 +497,14 @@ export const actions = {
 				return toolkit.commit("setFavorites", favorites);
 			});
 	},
-	fetchMovieById(toolkit, { token, id }) {
-		let request = "/movies/" + id;
+	fetchMovieById(toolkit, id) {
+		let request = `/movies/${id}`;
 
-		return apiConnection.get(request, { headers: { Authorization: `Bearer ${token}` } }).then(response => {
-			return response.data;
-		});
+		return apiConnection
+			.get(request, { headers: { Authorization: `Bearer ${toolkit.getters.authToken}` } })
+			.then(response => {
+				return response.data;
+			});
 	},
 	onActorsChanged(toolkit, payload) {
 		toolkit.commit("setActors", payload);

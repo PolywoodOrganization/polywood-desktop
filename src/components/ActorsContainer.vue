@@ -32,7 +32,7 @@
 		name: "ActorsContainer",
 		components: { Actor, Card },
 		created() {
-			this.$store.dispatch("fetchActors", { token: this.$store.getters.authToken });
+			this.$store.dispatch("fetchActors");
 		},
 		methods: {
 			onPageClicked(event) {

@@ -89,7 +89,7 @@ export default {
 			}
 		},
 		onCastingClicked() {
-			this.$store.dispatch("fetchCastingActors", { movieId: this.id, token: this.$store.getters.authToken });
+			this.$store.dispatch("fetchCastingActors", this.id);
 			this.$store.dispatch("showCastingBox");
 		},
 	},
