@@ -71,6 +71,7 @@ export default {
                 idmovie: this.id,
                 commentary: "",
                 added:  new Date(),
+                idfavorite: -1
             };
 
             this.$store.dispatch("addNewFavorite", favToAdd);

@@ -8,7 +8,7 @@
             <label for="comment" class="col-12"><b> Votre commentaire :</b></label>
             <input type="text" class="form-control col-12" id="comment" name="comment" placeholder="Commentaire" v-model="commentary"/>
 
-            <input type="submit" value="Modifier" class="btn btn-primary col-12" :class="{'disabled': username === '' || password === ''}"/>
+            <input type="submit" value="Modifier" class="btn btn-primary col-12"/>
         </form>
         <button class="remove-btn" @click="removeFromFavorites">❌</button>
     </Card>
