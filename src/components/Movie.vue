@@ -4,6 +4,7 @@
 		<p class="card-text"><b>Sortie :</b> {{releaseyear}}</p>
 		<p class="card-text"><b>Acteurs :</b> <span v-html="parseActors"></span></p>
 		<p class="card-text"><b>Directeurs :</b> <span v-html="parseDirectors"></span></p>
+		<button class="btn btn-primary" @click="onCastingClicked">Voir casting</button>
 	</Card>
 	<Card v-else additional-card-class="border-warning bg-warning empty-movie col-lg-3 col-md-2">
 		<img src="../assets/img/clapper.png" alt="Aucun film disponible" title="Aucun film disponible"/>
@@ -86,6 +87,10 @@ export default {
 				default:
 					return "primary";
 			}
+		},
+		onCastingClicked() {
+			this.$store.dispatch("fetchCastingActors", { movieId: this.id, token: this.$store.getters.authToken });
+			this.$store.dispatch("showCastingBox");
 		},
 	},
 	computed: {

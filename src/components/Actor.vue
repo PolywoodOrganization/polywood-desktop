@@ -5,6 +5,7 @@
 			<p class="card-text">Nombre de films : {{moviecount}}</p>
 			<p class="card-text">Note : {{rating}}</p>
 			<p class="card-text">Google hits : {{googlehits}}</p>
+			<button class="btn btn-primary" @click="onFilmographyClicked">Voir filmography</button>
 		</div>
 	</div>
 	<div class="card border-warning bg-warning shadow-sm col-lg-3 col-md-2 col-sm-2 col-xs-2 empty-movie"  v-else  @mouseover="isHoveringCard = true" @mouseout="isHoveringCard = false" :class="{shadow: isHoveringCard}">
@@ -37,6 +38,12 @@ export default {
 		},
 		googlehits: {
 			type: Number,
+		},
+	},
+	methods: {
+		onFilmographyClicked() {
+			this.$store.dispatch("fetchFilmographyMovies", { actorId: this.id, token: this.$store.getters.authToken });
+			this.$store.dispatch("showFilmographyBox");
 		},
 	},
 };
