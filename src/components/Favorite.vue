@@ -1,9 +1,9 @@
 <template>
-    <Card additional-card-class=" col-xl-3 col-lg-3 col-md-5 col-sm-12 border-secondary">
+    <Card title="Favoris" additional-card-class=" col-xl-3 col-lg-3 col-md-5 col-sm-12 border-secondary">
         <p class="card-text"><b> Film :</b> {{movie.title}}</p>
-        <p class="card-text"><b> Date :</b> {{added}}</p>
+        <p class="card-text"><b> Ajouté le :</b> {{added}}</p>
         <button class="bg-transparent border-0 edit-btn" @click="toggleEditMode">✏️</button>
-        <p v-if="!editComment" class="card-text"><b> Votre commentaire :</b> {{commentary}} </p>
+        <p v-if="!editComment" class="card-text"><b> Votre commentaire :</b> <q>{{commentary}}</q> </p>
         <form v-else class="row" @submit.prevent="onCommentEdited">
             <label for="comment" class="col-12"><b> Votre commentaire :</b></label>
             <input type="text" class="form-control col-12" id="comment" name="comment" placeholder="Commentaire" v-model="commentary"/>
@@ -16,7 +16,6 @@
 
 <script>
     import Card from "./Card";
-    import Badge from "./Badge";
 
     export default {
         name: "Favorite",
@@ -82,5 +81,9 @@
 
     .edit-btn{
         right: 25px;
+    }
+
+    q{
+        color: #00efb2;
     }
 </style>
