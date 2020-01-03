@@ -416,6 +416,18 @@ export const actions = {
 				}
 			);
 	},
+    removeMovieFavorite(toolkit, { token , idMovie}) {
+		let request = "/favorites/movie/" + idMovie;
+
+		return apiConnection
+			.delete(request, {headers: {Authorization: `Bearer ${token}`}})
+			.then(response => {
+				return response.data;
+			})
+			.then(
+				toolkit.commit("removeFavorite", idMovie)
+			)
+	},
 	onActorsChanged(toolkit, payload) {
 		toolkit.commit("setActors", payload);
 	},
@@ -476,6 +488,11 @@ export const mutations = {
 	},
 	addFavorite(state, payload) {
 		state.favorites.push(payload);
+	},
+    removeFavorite(state, payload) {
+		let index = state.favorites.findIndex(fav => fav.idmovie === payload);
+		if(index >= 0)
+			state.favorites.splice(index, 1);
 	},
 	setTotalNumberOfActorsWithSearch(state, payload) {
 		state.totalNumberOfActorsWithSearch = payload;

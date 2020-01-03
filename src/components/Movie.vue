@@ -71,7 +71,7 @@ export default {
 
         },
         removeFromFavorites(){
-            this.$store.dispatch("addNewFavorite", { token: this.$store.getters.authToken , idMovie: this.id});
+            this.$store.dispatch("removeMovieFavorite", { token: this.$store.getters.authToken , idMovie: this.id});
 
         },
 		getGenreColorType(genre) {
