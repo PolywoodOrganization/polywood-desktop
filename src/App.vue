@@ -8,8 +8,11 @@
 		<DialogBox v-else-if="isCastingBoxDisplayed" @closed="hideCastingBox">
 			<Actor class="actor" v-for="actor in this.$store.getters.castingActors" v-bind="actor" :key="actor.id" :display-filmography-button="false"/>
 		</DialogBox>
+		<DialogBox v-else-if="isMovieBoxDisplayed && currentMovieIsNotNull" @closed="hideMovieBox">
+			<MovieInfo class="movie-description" v-bind="this.$store.getters.currentMovieDisplayed" :key="this.$store.getters.currentMovieDisplayed.id" :movie="this.$store.getters.currentMovieDisplayed"/>
+		</DialogBox>
 		<DialogBox v-else-if="isFilmographyBoxDisplayed" @closed="hideFilmographyBox">
-			<Movie class="movie" v-for="movie in this.$store.getters.filmographyMovies" v-bind="movie" :key="movie.id" :display-casting-button="false"/>
+			<Movie class="movie" v-for="movie in this.$store.getters.filmographyMovies" v-bind="movie" :key="movie.id" :display-casting-button="false" :display-director-button="false"/>
 		</DialogBox>
 		<div v-else>
 			<NavBar/>
@@ -42,6 +45,7 @@ import LoginContainer from "./components/LoginContainer";
 import DialogBox from "./components/DialogBox";
 import Actor from "./components/Actor";
 import Movie from "./components/Movie";
+import MovieInfo from "./components/MovieInfo";
 
 export default {
 	name: "app",
@@ -58,6 +62,7 @@ export default {
 		LoginContainer,
 		PolywoodBanner,
 		NavBar,
+		MovieInfo
 	},
 	methods: {
 		showCastingBox() {
@@ -65,6 +70,13 @@ export default {
 		},
 		hideCastingBox() {
 			this.$store.dispatch("hideCastingBox");
+		},
+		showMovieBox() {
+			this.$store.dispatch("showMovieBox");
+		},
+		hideMovieBox() {
+			this.$store.dispatch("hideMovieBox");
+			this.$store.dispatch("setCurrentMovie", null)
 		},
 		showFilmographyBox() {
 			this.$store.dispatch("showFilmographyBox");
@@ -95,6 +107,12 @@ export default {
 		isCastingBoxDisplayed() {
 			return this.$store.getters.isCastingBoxDisplayed;
 		},
+		isMovieBoxDisplayed() {
+			return this.$store.getters.isMovieBoxDisplayed;
+		},
+		currentMovieIsNotNull() {
+			return this.$store.getters.currentMovieDisplayed != null && this.$store.getters.currentMovieDisplayed !== undefined;
+		},
 		isFilmographyBoxDisplayed() {
 			return this.$store.getters.isFilmographyBoxDisplayed;
 		},
@@ -116,4 +134,11 @@ export default {
 	/* .component-fade-leave-active below version 2.1.8 */ {
 	opacity: 0;
 }
+	.movie-description{
+		width: 100%;
+		text-align: center;
+		align-content: center;
+		font-size: 12pt;
+		font-family: "Open Sans Condensed", Helvetica, Verdana, Arial, sans-serif;
+	}
 </style>

@@ -61,7 +61,13 @@ export const state = {
 	 * Tell if the dialog box for casting must be displayed or not
 	 */
 	isCastingBoxDisplayed: false,
-
+	
+	/**
+	 * Tell if the dialog box for a specific movie must be displayed or not
+	 */
+	isMovieBoxDisplayed: false,
+	currentMovieDisplayed: null,
+	
 	/**
 	 * Tell if the dialog box for filmography must be displayed or not
 	 */
@@ -180,6 +186,12 @@ export const getters = {
 	},
 	isCastingBoxDisplayed(state) {
 		return state.isCastingBoxDisplayed;
+	},
+	isMovieBoxDisplayed(state) {
+		return state.isMovieBoxDisplayed;
+	},
+	currentMovieDisplayed(state) {
+		return state.currentMovieDisplayed;
 	},
 	isFilmographyBoxDisplayed(state) {
 		return state.isFilmographyBoxDisplayed;
@@ -341,6 +353,15 @@ export const actions = {
 	},
 	hideCastingBox(toolkit, _) {
 		toolkit.commit("setIsCastingBoxDisplayed", false);
+	},
+	showMovieBox(toolkit, _) {
+		toolkit.commit("setIsMovieBoxDisplayed", true);
+	},
+	hideMovieBox(toolkit, _) {
+		toolkit.commit("setIsMovieBoxDisplayed", false);
+	},
+	setCurrentMovie(toolkit, payload) {
+		toolkit.commit("setCurrentMovieDisplayed", payload);
 	},
 	onCastingActorsChanged(toolkit, payload) {
 		toolkit.commit("setCastingActors", payload);
@@ -651,6 +672,12 @@ export const mutations = {
 	},
 	setIsCastingBoxDisplayed(state, payload) {
 		state.isCastingBoxDisplayed = payload;
+	},
+	setIsMovieBoxDisplayed(state, payload) {
+		state.isMovieBoxDisplayed = payload;
+	},
+	setCurrentMovieDisplayed(state, payload) {
+		state.currentMovieDisplayed = JSON.parse(JSON.stringify(payload));
 	},
 	setIsFilmographyBoxDisplayed(state, payload) {
 		state.isFilmographyBoxDisplayed = payload;

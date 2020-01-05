@@ -1,5 +1,5 @@
 <template>
-	<Card v-if="title !== ''" :title="title" :cover="cover" additional-card-class=" col-xl-3 col-lg-3 col-md-5 col-sm-12 border-secondary">
+	<Card  @onCardClicked="onMovieClicked"  v-if="title !== ''" :title="title" :cover="cover" additional-card-class=" col-xl-3 col-lg-3 col-md-5 col-sm-12 border-secondary card-movie">
 		<p class="card-text"><b>Genre :</b> <Badge v-for="g in parseGenre" @onBadgeClicked="onGenreClicked" :title="g" :label-color="getGenreColorType(g)" :key="g"/></p>
 		<p class="card-text"><b>Sortie :</b> {{releaseyear}}</p>
 		<p class="card-text"><b>Acteurs :</b> <span v-html="parseActors"></span></p>
@@ -25,6 +25,7 @@ export default {
 	data() {
 		return {
 			isHoveringCard: false,
+			genreClicked: false
 		};
 	},
 	props: {
@@ -129,6 +130,20 @@ export default {
 			this.$store.dispatch("fetchMoviesOfDirector", this.directorsArray[0]);
             this.$store.dispatch("showFilmographyBox");
 		},
+		onMovieClicked(){
+			this.$store.dispatch("setCurrentMovie", {
+				id: this.id,
+				title: this.title,
+				cover: this.cover,
+				releaseyear: this.releaseyear,
+				releasedate: this.releasedate,
+				genre: this.genre,
+				writer: this.writer,
+				actors: this.actors,
+				directors: this.directors
+			});
+			this.$store.dispatch("showMovieBox");
+		}
 	},
 	computed: {
         isUserFavorite(){
@@ -160,4 +175,10 @@ export default {
 	background-color: transparent;
 	border: none;
 }
+
+	
+	.card-movie:hover{
+		transform: translateY(-5px) scale(1.005) translateZ(0);
+		box-shadow: 0 24px 36px rgba(0,0,0,0.11);
+	}
 </style>

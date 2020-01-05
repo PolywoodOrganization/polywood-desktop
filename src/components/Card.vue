@@ -8,7 +8,8 @@
 		
 		<div
 			v-if="title !== ''"
-			class="card-header"
+			class="card-header clickable"
+			@click="$emit('onCardClicked')"
 			:class="additionalCardHeaderClass"
 			:style="additionalCardHeaderStyle">
 			{{title}}
@@ -16,7 +17,8 @@
 		
 		<img
 			v-if="cover !== ''"
-			class="card-img-top"
+			class="card-img-top clickable"
+			@click="$emit('onCardClicked')"
 			:src="cover"
 			:alt="coverAlt"
 			:title="coverAlt"
@@ -102,4 +104,8 @@ export default {
 
 <style scoped lang="scss">
 @import "../assets/css/card-style";
+
+.clickable{
+	cursor: pointer;
+}
 </style>
