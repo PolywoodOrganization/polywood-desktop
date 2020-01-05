@@ -357,6 +357,9 @@ export const actions = {
 						moviecount: parseInt(actor_entry.moviecount),
 						rating: parseInt(actor_entry.ratingsum),
 						googlehits: parseInt(actor_entry.googlehits),
+						googleRating: parseInt(actor_entry.normalizedgooglerank),
+						imdbRating: parseInt(actor_entry.normalizedmovierank),
+						globalRating: parseInt(actor_entry.normalizedrating),
 					};
 				});
 			})
@@ -525,6 +528,9 @@ export const actions = {
 							moviecount: parseInt(actor_entry.moviecount),
 							rating: parseInt(actor_entry.ratingsum),
 							googlehits: parseInt(actor_entry.googlehits),
+							googleRating: parseInt(actor_entry.normalizedgooglerank),
+							imdbRating: parseInt(actor_entry.normalizedmovierank),
+							globalRating: parseInt(actor_entry.normalizedrating),
 						};
 					});
 				})

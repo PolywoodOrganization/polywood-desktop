@@ -36,7 +36,7 @@
 				:cover-alt="developer.name"
 				:key="developer.id"
 				:additional-card-class="['col-lg-5', 'col-md-10', 'border-' + developer.colorLabel]"
-				additional-cover-style="max-width: 200px;"
+				additional-cover-style="max-width: 100px;"
 				additional-cover-class="align-self-center">
 				<p><b>Jobs:</b> <span
 					v-for="(job, index) in developer.jobs"
