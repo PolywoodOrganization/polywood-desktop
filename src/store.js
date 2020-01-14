@@ -4,8 +4,7 @@ async function getImageUrl(movie) {
 	fetch(`http://localhost:8081/movies/image/${movie["id"]}`)
 		.then(response => response.text())
 		.then(url => {
-            if(url !=  null)
-                movie["cover"] = url;
+			if (url != null) movie["cover"] = url;
 			return null;
 		});
 }
@@ -61,13 +60,13 @@ export const state = {
 	 * Tell if the dialog box for casting must be displayed or not
 	 */
 	isCastingBoxDisplayed: false,
-	
+
 	/**
 	 * Tell if the dialog box for a specific movie must be displayed or not
 	 */
 	isMovieBoxDisplayed: false,
 	currentMovieDisplayed: null,
-	
+
 	/**
 	 * Tell if the dialog box for filmography must be displayed or not
 	 */
@@ -431,7 +430,7 @@ export const actions = {
 				return toolkit.commit("setFilmographyMovies", movies);
 			});
 	},
-    fetchMoviesOfDirector(toolkit, director) {
+	fetchMoviesOfDirector(toolkit, director) {
 		apiConnection
 			.get(`/movies/director/${director}`, {
 				headers: { Authorization: `Bearer ${toolkit.getters.authToken}` },
@@ -494,8 +493,8 @@ export const actions = {
 	 * of movies to fetch from the databse. Default value is 20.
 	 */
 	fetchMovies(toolkit, args) {
-		let page = args != null && args.hasOwnProperty("page") ? args.page : null;
-		let size = args != null && args.hasOwnProperty("size") ? args.size : null;
+		let page = args != null && args.hasOwnProperty("page") ? args.page : toolkit.getters.currentPageNumber;
+		let size = args != null && args.hasOwnProperty("size") ? args.size : toolkit.getters.batchSize;
 		if (lastMoviesFetch.page !== page || lastMoviesFetch.size !== size) {
 			let request = "/movies?";
 			if (page !== null && size !== null) request += `page=${page}&size=${size}&`;
@@ -532,8 +531,8 @@ export const actions = {
 		toolkit.commit("setMovies", payload);
 	},
 	fetchActors(toolkit, args) {
-		let page = args != null && args.hasOwnProperty("page") ? args.page : null;
-		let size = args != null && args.hasOwnProperty("size") ? args.size : null;
+		let page = args != null && args.hasOwnProperty("page") ? args.page : toolkit.getters.currentPageNumber;
+		let size = args != null && args.hasOwnProperty("size") ? args.size : toolkit.getters.batchSize;
 		if (lastActorsFetch.page !== page || lastActorsFetch.size !== size) {
 			let request = "/actors";
 			if (page !== null && size !== null) request += `?page=${page}&size=${size}`;
@@ -615,19 +614,17 @@ export const actions = {
 			})
 			.then(toolkit.commit("removeFavorite", idFav));
 	},
-    updateFavorite(toolkit, { token , toUpdate}) {
+	updateFavorite(toolkit, { token, toUpdate }) {
 		let request = "/favorites";
 
-        return apiConnection
-            .post(request, toUpdate, {headers: {Authorization: `Bearer ${toolkit.getters.authToken}`}})
-            .then(response => {
-                return response.data;
-            })
-            .then(
-                fav => {
-                    return toolkit.commit("changeFavorite", fav);
-                }
-            );
+		return apiConnection
+			.post(request, toUpdate, { headers: { Authorization: `Bearer ${toolkit.getters.authToken}` } })
+			.then(response => {
+				return response.data;
+			})
+			.then(fav => {
+				return toolkit.commit("changeFavorite", fav);
+			});
 	},
 	onActorsChanged(toolkit, payload) {
 		toolkit.commit("setActors", payload);
@@ -720,9 +717,9 @@ export const mutations = {
 		let index = state.favorites.findIndex(fav => fav.idfavorite === payload);
 		if (index >= 0) state.favorites.splice(index, 1);
 	},
-    changeFavorite(state, payload) {
+	changeFavorite(state, payload) {
 		let index = state.favorites.findIndex(fav => fav.idfavorite === payload);
-		state.favorites.set(index, payload)
+		state.favorites.set(index, payload);
 	},
 	setTotalNumberOfActorsWithSearch(state, payload) {
 		state.totalNumberOfActorsWithSearch = payload;

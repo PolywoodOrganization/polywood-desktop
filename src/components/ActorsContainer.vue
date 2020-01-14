@@ -46,6 +46,9 @@
 				if (!isNaN(p))
 					this.$store.dispatch("onCurrentPageNumberChanged", p);
 				
+				// Fetch new actors
+				this.$store.dispatch("fetchActors");
+				
 				// Scroll at the top of the page
 				document.getElementById("actors").scrollIntoView({behavior: "smooth"});
 			},
