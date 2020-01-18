@@ -24,10 +24,7 @@
 			<div class="component-separator"></div>
 			
 			<transition name="component-fade" mode="out-in">
-				<ElementContainer v-if="this.$store.getters.navigationId === 0" element-name="Movie" :element-list="this.$store.getters.movies" :call-fetch-elements="function() {this.$store.dispatch('fetchFavorites');this.$store.dispatch('fetchMovies');}" :max-pages="20" loading-image="../assets/img/clapper.png" no-elements-found="Aucun film trouvé 😕"/>
-				<ElementContainer v-else-if="this.$store.getters.navigationId === 1" element-name="Actor" :element-list="this.$store.getters.actors" :call-fetch-elements="this.$store.dispatch('fetchActors')" :max-pages="20" loading-image="../assets/img/director-chair.png" no-elements-found="Aucun acteur trouvé 😕"/>
-				<FavoritesContainer v-else-if="this.$store.getters.navigationId === 4"/>
-				<AboutUsContainer v-else/>
+				<component v-bind:is="view"></component>
 			</transition>
 		</div>
 		
@@ -49,18 +46,18 @@ import DialogBox from "./components/DialogBox";
 import Actor from "./components/Actor";
 import Movie from "./components/Movie";
 import MovieInfo from "./components/MovieInfo";
-import ElementContainer from "./components/ElementsContainer";
 
 export default {
 	name: "app",
 	components: {
-		ElementContainer,
 		Movie,
 		Actor,
 		DialogBox,
 		FilterBar,
 		FooterBanner,
 		AboutUsContainer,
+		ActorsContainer,
+		MoviesContainer,
 		FavoritesContainer,
 		LoginContainer,
 		PolywoodBanner,
@@ -89,6 +86,25 @@ export default {
 		},
 	},
 	computed: {
+		view() {
+			if (this.authToken === null || this.authToken === undefined)
+				return LoginContainer;
+			
+			switch (this.$store.getters.navigationId) {
+				case 0:
+					if (this.$store.getters.maxMoviesPages == null || this.$store.getters.currentPageNumber > this.$store.getters.maxMoviesPages)
+						this.$store.dispatch("onCurrentPageNumberChanged", 1);
+					return MoviesContainer;
+				case 1:
+					if (this.$store.getters.maxActorsPages == null || this.$store.getters.currentPageNumber > this.$store.getters.maxActorsPages)
+						this.$store.dispatch("onCurrentPageNumberChanged", 1);
+					return ActorsContainer;
+				case 4:
+					return FavoritesContainer;
+				default:
+					return AboutUsContainer;
+			}
+		},
 		authToken() {
 			return this.$store.getters.authToken;
 		},
@@ -103,6 +119,12 @@ export default {
 		},
 		isFilmographyBoxDisplayed() {
 			return this.$store.getters.isFilmographyBoxDisplayed;
+		},
+		movies() {
+			return this.$store.getters.movies;
+		},
+		actors() {
+			return this.$store.getters.actors;
 		},
 	},
 };
@@ -122,11 +144,12 @@ export default {
 	/* .component-fade-leave-active below version 2.1.8 */ {
 	opacity: 0;
 }
-	.movie-description{
-		width: 100%;
-		text-align: center;
-		align-content: center;
-		font-size: 12pt;
-		font-family: "Open Sans Condensed", Helvetica, Verdana, Arial, sans-serif;
-	}
+
+.movie-description{
+	width: 100%;
+	text-align: center;
+	align-content: center;
+	font-size: 12pt;
+	font-family: "Open Sans Condensed", Helvetica, Verdana, Arial, sans-serif;
+}
 </style>

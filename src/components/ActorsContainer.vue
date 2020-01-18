@@ -15,92 +15,49 @@
 		
 		<div class="row">
 			<div class="col-12">
-				<ul class="pagination pagination-lg justify-content-center">
-					<li class="page-item" :class="{disabled: currentPageNumber === 1}"><a class="page-link" @click="onPageClicked">&laquo;</a></li>
-					<li class="page-item" v-for="p in generatePaginationRange(pageBounds[0], pageBounds[1])" :class="{active: currentPageNumber === p}" :key="p"><a class="page-link" @click="onPageClicked">{{p}}</a></li>
-					<li class="page-item" :class="{disabled: currentPageNumber === this.maxPage}"><a class="page-link" @click="onPageClicked">&raquo;</a></li>
-				</ul>
+				<Pagination :max-pages="nbPages" @page-clicked="pageClicked"/>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
-	import Actor from "./Actor";
-	import Card from "./Card";
-	export default {
-		name: "ActorsContainer",
-		components: { Actor, Card },
-		created() {
+import Actor from "./Actor";
+import Card from "./Card";
+import Pagination from "./Pagination";
+export default {
+	name: "ActorsContainer",
+	components: { Pagination, Actor, Card },
+	created() {
+		this.$store.dispatch("fetchActors");
+		this.$store.dispatch("fetchMaxActorsPages");
+	},
+	methods: {
+		pageClicked() {
+			// Fetch new actors
 			this.$store.dispatch("fetchActors");
+			this.$store.dispatch("fetchMaxActorsPages");
+			
+			// Scroll at the top of the page
+			document.getElementById("actors").scrollIntoView({behavior: "smooth"});
 		},
-		methods: {
-			onPageClicked(event) {
-				let p = parseInt(event.target.text);
-				
-				if (event.target.text === '«')
-					p = 1;
-				if (event.target.text === '»')
-					p = this.maxPage;
-				
-				if (!isNaN(p))
-					this.$store.dispatch("onCurrentPageNumberChanged", p);
-				
-				// Fetch new actors
-				this.$store.dispatch("fetchActors");
-				
-				// Scroll at the top of the page
-				document.getElementById("actors").scrollIntoView({behavior: "smooth"});
-			},
-			generatePaginationRange(min, max, step = 1) {
-				let range = [];
-				for (let i = min; i <= max; i += step)
-					range.push(i);
-				return range;
-			},
+	},
+	computed: {
+		nbActors() {
+			return this.$store.getters.actors.length;
 		},
-		computed: {
-			currentPageNumber() {
-				return this.$store.getters.currentPageNumber;
-			},
-			batchSize() {
-				return this.$store.getters.batchSize;
-			},
-			nbActors() {
-				if (this.$store.getters.searchValue === '') {
-					return this.$store.getters.totalNumberOfActors;
-				}
-				else {
-					return this.$store.getters.totalNumberOfActorsWithSearch;
-				}
-			},
-			maxPage() {
-				if (!isNaN(this.batchSize) && this.batchSize > 0)
-					return Math.max(1, Math.ceil(this.nbActors / this.batchSize));
-				else
-					return 1;
-			},
-			pageBounds() {
-				let lowerPage = Math.max(this.currentPageNumber - 2, 1);
-				let upperPage = Math.min(this.currentPageNumber + 2, this.maxPage);
-				let delta = upperPage - lowerPage;
-				// If the number of maximum page available is not matched, add the other pages
-				if (delta < 4) {
-					if (lowerPage === 1) {
-						// Add more page in upperPage
-						upperPage += Math.min(4, this.maxPage-1) - delta
-					}
-					else {
-						// Add more page in lowerPage
-						lowerPage -= 4 - delta
-					}
-				}
-				return [lowerPage, upperPage];
-			},
+		nbPages() {
+			let pages = this.$store.getters.maxActorsPages;
+			if (pages == null)
+				return 10;
+			return pages;
 		},
-	};
+	},
+};
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
+.actor {
+	display: inline-block;
+}
 </style>

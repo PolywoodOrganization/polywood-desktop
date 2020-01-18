@@ -106,16 +106,14 @@ export const state = {
 	favorites: [],
 
 	/**
-	 * When the search value is not empty, the total number of movies is reduced, and the new number is stored in this
-	 * variable.
+	 * The number of pages for `movies`, according to the `batchSize`.
 	 */
-	totalNumberOfMoviesWithSearch: null,
+	maxMoviesPages: undefined,
 
 	/**
-	 * When the search value is not empty, the total number of actors is reduced, and the new number is stored in this
-	 * variable.
+	 * The number of pages for `actors`, according to the `batchSize`.
 	 */
-	totalNumberOfActorsWithSearch: null,
+	maxActorsPages: undefined,
 
 	/**
 	 * Current page in the pagination for the movies and actors. One-indexed number. If `null`, then no pagination is
@@ -211,114 +209,16 @@ export const getters = {
 		return state.sortingOrder;
 	},
 	movies(state) {
-		// page is a zero-based index
-		let list = null;
-
-		// Filter according to searchValue
-		if (state.searchValue === "") list = state.movies;
-		else {
-			list = state.movies.filter(movie => {
-				let result = false;
-				result = result || checkField(state.searchValue, movie.title, state);
-				result = result || checkField(state.searchValue, movie.releaseyear, state);
-				result = result || checkField(state.searchValue, movie.releasedate, state);
-				result = result || checkField(state.searchValue, movie.genre, state);
-				result = result || checkField(state.searchValue, movie.writer, state);
-				result = result || checkField(state.searchValue, movie.actors, state);
-				result = result || checkField(state.searchValue, movie.directors, state);
-				return result;
-			});
-			state.currentPageNumber = 1;
-		}
-		state.totalNumberOfMoviesWithSearch = list.length;
-
-		// Sort according to sortingMethod
-		// Sort alphabetically
-		if (state.sortingMethod === 0) list = list.sort();
-		// Sort by release year
-		else if (state.sortingMethod === 1)
-			list = list.sort((a, b) => {
-				return a.releaseyear - b.releaseyear;
-			});
-
-		// If order is "Descending"
-		if (state.sortingOrder === 1) list.reverse();
-
-		// Take a subset of the list if `page` and `size` are valid
-		if (state.currentPageNumber !== null && state.batchSize !== null)
-			list = list.slice(
-				(state.currentPageNumber - 1) * state.batchSize,
-				state.currentPageNumber * state.batchSize
-			);
-
-		return list;
-	},
-	totalNumberOfMovies(state) {
-		return state.movies.length;
-	},
-	totalNumberOfMoviesWithSearch(state) {
-		return state.totalNumberOfMoviesWithSearch;
+		return state.movies;
 	},
 	actors(state) {
-		let list = null;
-
-		// Filter according to searchValue
-		if (state.searchValue === "") list = state.actors;
-		else
-			list = state.actors.filter(movie => {
-				return movie.name.toLowerCase().includes(state.searchValue.toLowerCase());
-			});
-
-		// Sort according to sortingMethod
-		// Sort alphabetically
-		if (state.sortingMethod === 0) list = list.sort();
-		else if (state.sortingMethod === 2)
-			list = list.sort((a, b) => {
-				return a.moviecount - b.moviecount;
-			});
-		// Sort by rating
-		else if (state.sortingMethod === 3)
-			list = list.sort((a, b) => {
-				return a.rating - b.rating;
-			});
-		// Sort by google hits
-		else if (state.sortingMethod === 4)
-			list = list.sort((a, b) => {
-				return a.googlehits - b.googlehits;
-			});
-
-		// Filter according to searchValue
-		if (state.searchValue === "") list = state.actors;
-		else {
-			list = state.actors.filter(actor => {
-				let result = false;
-				result = result || checkField(state.searchValue, actor.name, state);
-				result = result || checkField(state.searchValue, actor.moviecount, state);
-				result = result || checkField(state.searchValue, actor.rating, state);
-				result = result || checkField(state.searchValue, actor.googlehits, state);
-				return result;
-			});
-			state.currentPageNumber = 1;
-		}
-		state.totalNumberOfActorsWithSearch = list.length;
-
-		// If order is "Descending"
-		if (state.sortingOrder === 1) list.reverse();
-
-		// Take a subset of the list if `page` and `size` are valid
-		if (state.currentPageNumber !== null && state.batchSize !== null)
-			list = list.slice(
-				(state.currentPageNumber - 1) * state.batchSize,
-				state.currentPageNumber * state.batchSize
-			);
-
-		return list;
+		return state.actors;
 	},
-	totalNumberOfActors(state) {
-		return state.actors.length;
+	maxMoviesPages(state) {
+		return state.maxMoviesPages;
 	},
-	totalNumberOfActorsWithSearch(state) {
-		return state.totalNumberOfActorsWithSearch;
+	maxActorsPages(state) {
+		return state.maxActorsPages;
 	},
 	currentPageNumber(state) {
 		return state.currentPageNumber;
@@ -493,7 +393,7 @@ export const actions = {
 	 * of movies to fetch from the databse. Default value is 20.
 	 */
 	fetchMovies(toolkit, args) {
-		let page = args != null && args.hasOwnProperty("page") ? args.page : toolkit.getters.currentPageNumber;
+		let page = (args != null && args.hasOwnProperty("page") ? args.page : toolkit.getters.currentPageNumber) - 1;
 		let size = args != null && args.hasOwnProperty("size") ? args.size : toolkit.getters.batchSize;
 		if (lastMoviesFetch.page !== page || lastMoviesFetch.size !== size) {
 			let request = "/movies?";
@@ -508,7 +408,7 @@ export const actions = {
 						let movie = {
 							id: movie_entry.movieid,
 							title: movie_entry.title,
-							cover: "./assets/svg/no-image.svg",
+							cover: "../assets/svg/no-image.svg",
 							releaseyear: parseInt(movie_entry.releaseyear),
 							releasedate: movie_entry.releasedate,
 							genre: movie_entry.genre,
@@ -521,8 +421,8 @@ export const actions = {
 					});
 				})
 				.then(movies => {
-					lastMoviesFetch["page"] = page;
-					lastMoviesFetch["size"] = size;
+					lastMoviesFetch.page = page;
+					lastMoviesFetch.size = size;
 					return toolkit.commit("setMovies", movies);
 				});
 		}
@@ -531,7 +431,7 @@ export const actions = {
 		toolkit.commit("setMovies", payload);
 	},
 	fetchActors(toolkit, args) {
-		let page = args != null && args.hasOwnProperty("page") ? args.page : toolkit.getters.currentPageNumber;
+		let page = (args != null && args.hasOwnProperty("page") ? args.page : toolkit.getters.currentPageNumber) - 1;
 		let size = args != null && args.hasOwnProperty("size") ? args.size : toolkit.getters.batchSize;
 		if (lastActorsFetch.page !== page || lastActorsFetch.size !== size) {
 			let request = "/actors";
@@ -560,6 +460,32 @@ export const actions = {
 					return toolkit.commit("setActors", actors);
 				});
 		}
+	},
+	fetchMaxMoviesPages(toolkit, size = null) {
+		size = size != null ? size : toolkit.getters.batchSize;
+		apiConnection
+			.get(`/movies/maxPage?size=${size}`, {
+				headers: { Authorization: `Bearer ${toolkit.getters.authToken}` },
+			})
+			.then(response => {
+				return response.data;
+			})
+			.then(number => {
+				toolkit.commit(`setMaxMoviesPages`, number);
+			});
+	},
+	fetchMaxActorsPages(toolkit, size = null) {
+		size = size != null ? size : toolkit.getters.batchSize;
+		apiConnection
+			.get(`/actors/maxPage?size=${size}`, {
+				headers: { Authorization: `Bearer ${toolkit.getters.authToken}` },
+			})
+			.then(response => {
+				return response.data;
+			})
+			.then(number => {
+				toolkit.commit(`setMaxActorsPages`, number);
+			});
 	},
 	fetchFavorites(toolkit, _) {
 		let request = "/favorites";
@@ -710,11 +636,14 @@ export const mutations = {
 	setMovies(state, payload) {
 		state.movies = payload;
 	},
-	setTotalNumberOfMoviesWithSearch(state, payload) {
-		state.totalNumberOfMoviesWithSearch = payload;
-	},
 	setActors(state, payload) {
 		state.actors = payload;
+	},
+	setMaxMoviesPages(state, payload) {
+		state.maxMoviesPages = payload;
+	},
+	setMaxActorsPages(state, payload) {
+		state.maxActorsPages = payload;
 	},
 	setFavorites(state, payload) {
 		state.favorites = payload;
