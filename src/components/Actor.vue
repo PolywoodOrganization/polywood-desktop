@@ -5,7 +5,8 @@
 			<p class="card-text">Nombre de films : {{moviecount}}</p>
 			<p class="card-text">Note : {{rating}}</p>
 			<p class="card-text">Google hits : {{googlehits}}</p>
-			<p class="card-text">Note google : <span v-for="n in googleRating" v-bind:key="n">⭐</span></p>
+			<p class="card-text" v-if="googleRating">Note google : <span v-for="n in googleRating" v-bind:key="n">⭐</span></p>
+			<p class="card-text" v-else>Note google : 0 </p>
 			<p class="card-text">Note imdb : <span v-for="n in imdbRating" v-bind:key="n">⭐</span></p>
 			<p class="rank">{{globalRating}} /10 </p>
 			<button v-if="this.displayFilmographyButton" class="btn btn-primary" @click="onFilmographyClicked">Voir filmographie</button>
