@@ -645,7 +645,20 @@ export const actions = {
 		return apiConnection
 			.post("/login", payload)
 			.then(response => {
-				toolkit.commit("setAuthToken", response.data);
+				/* User is stored in `response.data.user`
+				 * Example :
+				 * {
+				 *     "token": "eyJ0eXAiOiJKV",
+				 *     "user": {
+				 *         "iduser": 0,
+				 *         "login": "MyLogin",
+				 *         "password": "hgsushgo",
+				 *         "firstname": "Hello",
+				 *         "lastname": "World"
+				 *     }
+				 * }
+				 * */
+				toolkit.commit("setAuthToken", response.data.token);
 				toolkit.commit("setUsername", payload.login);
 				return true;
 			})
