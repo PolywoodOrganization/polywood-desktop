@@ -1,6 +1,6 @@
 <template>
 	<div class="container">
-		<form class="row">
+		<form class="row" @submit.prevent="search">
 			<input type="text" class="form-control col-4 offset-1" placeholder="Rechercher" @input="onSearchFieldChanged" :value="searchValue"/>
 			<select class="form-control col-3" @change="onSortingFieldChanged">
 				<option value="0" :selected="sortingMethod === 0">Ranger dans l'ordre alphabétique</option>
@@ -13,7 +13,7 @@
 				<option value="0" :selected="sortingOrder === 0">Ascendant</option>
 				<option value="1" :selected="sortingOrder === 1">Descendant</option>
 			</select>
-			<input type="reset" class="btn btn-outline-primary col-1" value="Effacer" @click="onResetClicked"/>
+			<input type="submit" class="btn btn-primary col-1" value="Rechercher"/>
 		</form>
 	</div>
 </template>
@@ -31,11 +31,21 @@ export default {
 		onOrderFieldChanged(event) {
 			this.$store.dispatch("onSortingOrderChanged", parseInt(event.target.value))
 		},
-		onResetClicked() {
-			this.$store.dispatch("onSearchValueChanged", "");
-			this.$store.dispatch("onSortingMethodChanged", 0);
-			this.$store.dispatch("onSortingOrderChanged", 0);
-		}
+		search() {
+			// If searching through movies
+			if (this.$store.getters.navigationId === 0) {
+				console.log("Searching movies...");
+				this.$store.dispatch("fetchFavorites");
+				this.$store.dispatch("fetchMovies");
+				this.$store.dispatch("fetchMaxMoviesPages");
+			}
+			// If searching through actors
+			else if (this.$store.getters.navigationId === 1) {
+				console.log("Searching actors...");
+				this.$store.dispatch("fetchActors");
+				this.$store.dispatch("fetchMaxActorsPages");
+			}
+		},
 	},
 	computed: {
 		searchValue() {

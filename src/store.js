@@ -23,22 +23,6 @@ let checkField = function(searchValue, field, state) {
 	} else return false;
 };
 
-/**
- * Boolean that indicates if the movies are already fetched
- */
-let lastMoviesFetch = {
-	page: undefined,
-	size: undefined,
-};
-
-/**
- * Boolean that indicates if the actors are already fetched
- */
-let lastActorsFetch = {
-	page: undefined,
-	size: undefined,
-};
-
 const apiConnection = axios.create({
 	baseURL: `http://localhost:8083/`,
 	headers: {
@@ -85,11 +69,11 @@ export const state = {
 	searchValue: "",
 
 	/**
-	 * 0: Sort alphabetic
-	 * 1: Sort release year
-	 * 2: Sort movie count
-	 * 3: Sort rating
-	 * 4: Sort google hits
+	 * 0: Sort alphabetic (movie/actor)
+	 * 1: Sort release year (movie)
+	 * 2: Sort movie count (actor)
+	 * 3: Sort rating (actor)
+	 * 4: Sort google hits (actor)
 	 */
 	sortingMethod: 0,
 
@@ -395,37 +379,35 @@ export const actions = {
 	fetchMovies(toolkit, args) {
 		let page = (args != null && args.hasOwnProperty("page") ? args.page : toolkit.getters.currentPageNumber) - 1;
 		let size = args != null && args.hasOwnProperty("size") ? args.size : toolkit.getters.batchSize;
-		if (lastMoviesFetch.page !== page || lastMoviesFetch.size !== size) {
-			let request = "/movies?";
-			if (page !== null && size !== null) request += `page=${page}&size=${size}&`;
-			request += `sort=title`;
 
-			apiConnection
-				.get(request, { headers: { Authorization: `Bearer ${toolkit.getters.authToken}` } })
-				.then(response => {
-					let movie_entries = response.data;
-					return movie_entries.map(movie_entry => {
-						let movie = {
-							id: movie_entry.movieid,
-							title: movie_entry.title,
-							cover: "../assets/svg/no-image.svg",
-							releaseyear: parseInt(movie_entry.releaseyear),
-							releasedate: movie_entry.releasedate,
-							genre: movie_entry.genre,
-							writer: movie_entry.writer,
-							actors: movie_entry.actors,
-							directors: movie_entry.directors,
-						};
-						getImageUrl(movie);
-						return movie;
-					});
-				})
-				.then(movies => {
-					lastMoviesFetch.page = page;
-					lastMoviesFetch.size = size;
-					return toolkit.commit("setMovies", movies);
+		let request = "/movies?";
+		if (page != null && size != null) request += `page=${page}&size=${size}`;
+		if (toolkit.getters.sortingMethod === 0) request += `&sort=title`;
+		else if (toolkit.getters.sortingMethod === 1) request += `&sort=releaseyear`;
+
+		apiConnection
+			.get(request, { headers: { Authorization: `Bearer ${toolkit.getters.authToken}` } })
+			.then(response => {
+				let movie_entries = response.data;
+				return movie_entries.map(movie_entry => {
+					let movie = {
+						id: movie_entry.movieid,
+						title: movie_entry.title,
+						cover: "../assets/svg/no-image.svg",
+						releaseyear: parseInt(movie_entry.releaseyear),
+						releasedate: movie_entry.releasedate,
+						genre: movie_entry.genre,
+						writer: movie_entry.writer,
+						actors: movie_entry.actors,
+						directors: movie_entry.directors,
+					};
+					getImageUrl(movie);
+					return movie;
 				});
-		}
+			})
+			.then(movies => {
+				return toolkit.commit("setMovies", movies);
+			});
 	},
 	onMoviesChanged(toolkit, payload) {
 		toolkit.commit("setMovies", payload);
@@ -433,33 +415,34 @@ export const actions = {
 	fetchActors(toolkit, args) {
 		let page = (args != null && args.hasOwnProperty("page") ? args.page : toolkit.getters.currentPageNumber) - 1;
 		let size = args != null && args.hasOwnProperty("size") ? args.size : toolkit.getters.batchSize;
-		if (lastActorsFetch.page !== page || lastActorsFetch.size !== size) {
-			let request = "/actors";
-			if (page !== null && size !== null) request += `?page=${page}&size=${size}`;
 
-			apiConnection
-				.get(request, { headers: { Authorization: `Bearer ${toolkit.getters.authToken}` } })
-				.then(response => {
-					let actor_entries = response.data;
-					return actor_entries.map(actor_entry => {
-						return {
-							id: actor_entry.actorid,
-							name: actor_entry.name,
-							moviecount: parseInt(actor_entry.moviecount),
-							rating: parseInt(actor_entry.ratingsum),
-							googlehits: parseInt(actor_entry.googlehits),
-							googleRating: parseInt(actor_entry.normalizedgooglerank),
-							imdbRating: parseInt(actor_entry.normalizedmovierank),
-							globalRating: parseInt(actor_entry.normalizedrating),
-						};
-					});
-				})
-				.then(actors => {
-					lastActorsFetch["page"] = page;
-					lastActorsFetch["size"] = size;
-					return toolkit.commit("setActors", actors);
+		let request = "/actors";
+		if (page != null && size != null) request += `?page=${page}&size=${size}`;
+		if (toolkit.getters.sortingMethod === 0) request += `&sort=name`;
+		else if (toolkit.getters.sortingMethod === 2) request += `&sort=moviecount`;
+		else if (toolkit.getters.sortingMethod === 3) request += `&sort=ratingsum`;
+		else if (toolkit.getters.sortingMethod === 4) request += `&sort=googlehits`;
+
+		apiConnection
+			.get(request, { headers: { Authorization: `Bearer ${toolkit.getters.authToken}` } })
+			.then(response => {
+				let actor_entries = response.data;
+				return actor_entries.map(actor_entry => {
+					return {
+						id: actor_entry.actorid,
+						name: actor_entry.name,
+						moviecount: parseInt(actor_entry.moviecount),
+						rating: parseInt(actor_entry.ratingsum),
+						googlehits: parseInt(actor_entry.googlehits),
+						googleRating: parseInt(actor_entry.normalizedgooglerank),
+						imdbRating: parseInt(actor_entry.normalizedmovierank),
+						globalRating: parseInt(actor_entry.normalizedrating),
+					};
 				});
-		}
+			})
+			.then(actors => {
+				return toolkit.commit("setActors", actors);
+			});
 	},
 	fetchMaxMoviesPages(toolkit, size = null) {
 		size = size != null ? size : toolkit.getters.batchSize;
