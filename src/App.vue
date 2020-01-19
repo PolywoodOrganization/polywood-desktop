@@ -92,8 +92,12 @@ export default {
 			
 			switch (this.$store.getters.navigationId) {
 				case 0:
+					if (this.$store.getters.maxMoviesPages == null || this.$store.getters.currentPageNumber > this.$store.getters.maxMoviesPages)
+						this.$store.dispatch("onCurrentPageNumberChanged", 1);
 					return MoviesContainer;
 				case 1:
+					if (this.$store.getters.maxActorsPages == null || this.$store.getters.currentPageNumber > this.$store.getters.maxActorsPages)
+						this.$store.dispatch("onCurrentPageNumberChanged", 1);
 					return ActorsContainer;
 				case 4:
 					return FavoritesContainer;
@@ -111,10 +115,16 @@ export default {
 			return this.$store.getters.isMovieBoxDisplayed;
 		},
 		currentMovieIsNotNull() {
-			return this.$store.getters.currentMovieDisplayed != null && this.$store.getters.currentMovieDisplayed !== undefined;
+			return this.$store.getters.currentMovieDisplayed != null;
 		},
 		isFilmographyBoxDisplayed() {
 			return this.$store.getters.isFilmographyBoxDisplayed;
+		},
+		movies() {
+			return this.$store.getters.movies;
+		},
+		actors() {
+			return this.$store.getters.actors;
 		},
 	},
 };
@@ -134,11 +144,12 @@ export default {
 	/* .component-fade-leave-active below version 2.1.8 */ {
 	opacity: 0;
 }
-	.movie-description{
-		width: 100%;
-		text-align: center;
-		align-content: center;
-		font-size: 12pt;
-		font-family: "Open Sans Condensed", Helvetica, Verdana, Arial, sans-serif;
-	}
+
+.movie-description{
+	width: 100%;
+	text-align: center;
+	align-content: center;
+	font-size: 12pt;
+	font-family: "Open Sans Condensed", Helvetica, Verdana, Arial, sans-serif;
+}
 </style>

@@ -1,7 +1,7 @@
 <template>
 	<div class="container">
-		<form class="row">
-			<input type="text" class="form-control col-4 offset-1" placeholder="Rechercher" @input="onSearchFieldChanged" :value="searchValue"/>
+		<form class="row" @submit.prevent="search">
+			<input type="text" class="form-control col-5 offset-1" placeholder="Rechercher" @input="onSearchFieldChanged" :value="searchValue"/>
 			<select class="form-control col-3" @change="onSortingFieldChanged">
 				<option value="0" :selected="sortingMethod === 0">Ranger dans l'ordre alphabétique</option>
 				<option v-if="this.$store.getters.navigationId === 0" value="1" :selected="sortingMethod === 1">Ranger par date de sortie</option>
@@ -9,11 +9,7 @@
 				<option v-if="this.$store.getters.navigationId === 1" value="3" :selected="sortingMethod === 3">Ranger par note</option>
 				<option v-if="this.$store.getters.navigationId === 1" value="4" :selected="sortingMethod === 4">Ranger par Google hits</option>
 			</select>
-			<select class="form-control col-2" @change="onOrderFieldChanged">
-				<option value="0" :selected="sortingOrder === 0">Ascendant</option>
-				<option value="1" :selected="sortingOrder === 1">Descendant</option>
-			</select>
-			<input type="reset" class="btn btn-outline-primary col-1" value="Effacer" @click="onResetClicked"/>
+			<input type="submit" class="btn btn-primary col-2" value="Rechercher"/>
 		</form>
 	</div>
 </template>
@@ -28,14 +24,19 @@ export default {
 		onSortingFieldChanged(event) {
 			this.$store.dispatch("onSortingMethodChanged", parseInt(event.target.value));
 		},
-		onOrderFieldChanged(event) {
-			this.$store.dispatch("onSortingOrderChanged", parseInt(event.target.value))
+		search() {
+			// If searching through movies
+			if (this.$store.getters.navigationId === 0) {
+				console.log("Searching movies...");
+				this.$store.dispatch("fetchFavorites");
+				this.$store.dispatch("fetchMovies");
+			}
+			// If searching through actors
+			else if (this.$store.getters.navigationId === 1) {
+				console.log("Searching actors...");
+				this.$store.dispatch("fetchActors");
+			}
 		},
-		onResetClicked() {
-			this.$store.dispatch("onSearchValueChanged", "");
-			this.$store.dispatch("onSortingMethodChanged", 0);
-			this.$store.dispatch("onSortingOrderChanged", 0);
-		}
 	},
 	computed: {
 		searchValue() {
@@ -43,9 +44,6 @@ export default {
 		},
 		sortingMethod() {
 			return this.$store.getters.sortingMethod;
-		},
-		sortingOrder() {
-			return this.$store.getters.sortingOrder;
 		},
 	},
 };

@@ -4,8 +4,7 @@ async function getImageUrl(movie) {
 	fetch(`http://localhost:8081/movies/image/${movie["id"]}`)
 		.then(response => response.text())
 		.then(url => {
-            if(url !=  null)
-                movie["cover"] = url;
+			if (url != null) movie["cover"] = url;
 			return null;
 		});
 }
@@ -22,22 +21,6 @@ let checkField = function(searchValue, field, state) {
 			return false;
 		}
 	} else return false;
-};
-
-/**
- * Boolean that indicates if the movies are already fetched
- */
-let lastMoviesFetch = {
-	page: undefined,
-	size: undefined,
-};
-
-/**
- * Boolean that indicates if the actors are already fetched
- */
-let lastActorsFetch = {
-	page: undefined,
-	size: undefined,
 };
 
 const apiConnection = axios.create({
@@ -61,13 +44,13 @@ export const state = {
 	 * Tell if the dialog box for casting must be displayed or not
 	 */
 	isCastingBoxDisplayed: false,
-	
+
 	/**
 	 * Tell if the dialog box for a specific movie must be displayed or not
 	 */
 	isMovieBoxDisplayed: false,
 	currentMovieDisplayed: null,
-	
+
 	/**
 	 * Tell if the dialog box for filmography must be displayed or not
 	 */
@@ -86,19 +69,13 @@ export const state = {
 	searchValue: "",
 
 	/**
-	 * 0: Sort alphabetic
-	 * 1: Sort release year
-	 * 2: Sort movie count
-	 * 3: Sort rating
-	 * 4: Sort google hits
+	 * 0: Sort alphabetic (movie/actor)
+	 * 1: Sort release year (movie)
+	 * 2: Sort movie count (actor)
+	 * 3: Sort rating (actor)
+	 * 4: Sort google hits (actor)
 	 */
 	sortingMethod: 0,
-
-	/**
-	 * 0: Ascending
-	 * 1: Descending
-	 */
-	sortingOrder: 0,
 
 	movies: [],
 
@@ -107,16 +84,14 @@ export const state = {
 	favorites: [],
 
 	/**
-	 * When the search value is not empty, the total number of movies is reduced, and the new number is stored in this
-	 * variable.
+	 * The number of pages for `movies`, according to the `batchSize`.
 	 */
-	totalNumberOfMoviesWithSearch: null,
+	maxMoviesPages: undefined,
 
 	/**
-	 * When the search value is not empty, the total number of actors is reduced, and the new number is stored in this
-	 * variable.
+	 * The number of pages for `actors`, according to the `batchSize`.
 	 */
-	totalNumberOfActorsWithSearch: null,
+	maxActorsPages: undefined,
 
 	/**
 	 * Current page in the pagination for the movies and actors. One-indexed number. If `null`, then no pagination is
@@ -208,118 +183,17 @@ export const getters = {
 	sortingMethod(state) {
 		return state.sortingMethod;
 	},
-	sortingOrder(state) {
-		return state.sortingOrder;
-	},
 	movies(state) {
-		// page is a zero-based index
-		let list = null;
-
-		// Filter according to searchValue
-		if (state.searchValue === "") list = state.movies;
-		else {
-			list = state.movies.filter(movie => {
-				let result = false;
-				result = result || checkField(state.searchValue, movie.title, state);
-				result = result || checkField(state.searchValue, movie.releaseyear, state);
-				result = result || checkField(state.searchValue, movie.releasedate, state);
-				result = result || checkField(state.searchValue, movie.genre, state);
-				result = result || checkField(state.searchValue, movie.writer, state);
-				result = result || checkField(state.searchValue, movie.actors, state);
-				result = result || checkField(state.searchValue, movie.directors, state);
-				return result;
-			});
-			state.currentPageNumber = 1;
-		}
-		state.totalNumberOfMoviesWithSearch = list.length;
-
-		// Sort according to sortingMethod
-		// Sort alphabetically
-		if (state.sortingMethod === 0) list = list.sort();
-		// Sort by release year
-		else if (state.sortingMethod === 1)
-			list = list.sort((a, b) => {
-				return a.releaseyear - b.releaseyear;
-			});
-
-		// If order is "Descending"
-		if (state.sortingOrder === 1) list.reverse();
-
-		// Take a subset of the list if `page` and `size` are valid
-		if (state.currentPageNumber !== null && state.batchSize !== null)
-			list = list.slice(
-				(state.currentPageNumber - 1) * state.batchSize,
-				state.currentPageNumber * state.batchSize
-			);
-
-		return list;
-	},
-	totalNumberOfMovies(state) {
-		return state.movies.length;
-	},
-	totalNumberOfMoviesWithSearch(state) {
-		return state.totalNumberOfMoviesWithSearch;
+		return state.movies;
 	},
 	actors(state) {
-		let list = null;
-
-		// Filter according to searchValue
-		if (state.searchValue === "") list = state.actors;
-		else
-			list = state.actors.filter(movie => {
-				return movie.name.toLowerCase().includes(state.searchValue.toLowerCase());
-			});
-
-		// Sort according to sortingMethod
-		// Sort alphabetically
-		if (state.sortingMethod === 0) list = list.sort();
-		else if (state.sortingMethod === 2)
-			list = list.sort((a, b) => {
-				return a.moviecount - b.moviecount;
-			});
-		// Sort by rating
-		else if (state.sortingMethod === 3)
-			list = list.sort((a, b) => {
-				return a.rating - b.rating;
-			});
-		// Sort by google hits
-		else if (state.sortingMethod === 4)
-			list = list.sort((a, b) => {
-				return a.googlehits - b.googlehits;
-			});
-
-		// Filter according to searchValue
-		if (state.searchValue === "") list = state.actors;
-		else {
-			list = state.actors.filter(actor => {
-				let result = false;
-				result = result || checkField(state.searchValue, actor.name, state);
-				result = result || checkField(state.searchValue, actor.moviecount, state);
-				result = result || checkField(state.searchValue, actor.rating, state);
-				result = result || checkField(state.searchValue, actor.googlehits, state);
-				return result;
-			});
-			state.currentPageNumber = 1;
-		}
-		state.totalNumberOfActorsWithSearch = list.length;
-
-		// If order is "Descending"
-		if (state.sortingOrder === 1) list.reverse();
-
-		// Take a subset of the list if `page` and `size` are valid
-		if (state.currentPageNumber !== null && state.batchSize !== null)
-			list = list.slice(
-				(state.currentPageNumber - 1) * state.batchSize,
-				state.currentPageNumber * state.batchSize
-			);
-
-		return list;
+		return state.actors;
 	},
-	totalNumberOfActors(state) {
-		return state.actors.length;
+	maxMoviesPages(state) {
+		return state.maxMoviesPages;
 	},
-	totalNumberOfActorsWithSearch(state) {
-		return state.totalNumberOfActorsWithSearch;
+	maxActorsPages(state) {
+		return state.maxActorsPages;
 	},
 	currentPageNumber(state) {
 		return state.currentPageNumber;
@@ -431,7 +305,7 @@ export const actions = {
 				return toolkit.commit("setFilmographyMovies", movies);
 			});
 	},
-    fetchMoviesOfDirector(toolkit, director) {
+	fetchMoviesOfDirector(toolkit, director) {
 		apiConnection
 			.get(`/movies/director/${director}`, {
 				headers: { Authorization: `Bearer ${toolkit.getters.authToken}` },
@@ -484,9 +358,6 @@ export const actions = {
 	onSortingMethodChanged(toolkit, payload) {
 		toolkit.commit("setSortingMethod", payload);
 	},
-	onSortingOrderChanged(toolkit, payload) {
-		toolkit.commit("setSortingOrder", payload);
-	},
 	/**
 	 * Fetch the movie from the database and store the result in the state.
 	 * @param toolkit The Vuex toolkit.
@@ -494,73 +365,109 @@ export const actions = {
 	 * of movies to fetch from the databse. Default value is 20.
 	 */
 	fetchMovies(toolkit, args) {
-		let page = args != null && args.hasOwnProperty("page") ? args.page : null;
-		let size = args != null && args.hasOwnProperty("size") ? args.size : null;
-		if (lastMoviesFetch.page !== page || lastMoviesFetch.size !== size) {
-			let request = "/movies?";
-			if (page !== null && size !== null) request += `page=${page}&size=${size}&`;
-			request += `sort=title`;
+		let page = (args != null && args.hasOwnProperty("page") ? args.page : toolkit.getters.currentPageNumber) - 1;
+		let size = args != null && args.hasOwnProperty("size") ? args.size : toolkit.getters.batchSize;
 
-			apiConnection
-				.get(request, { headers: { Authorization: `Bearer ${toolkit.getters.authToken}` } })
-				.then(response => {
-					let movie_entries = response.data;
-					return movie_entries.map(movie_entry => {
-						let movie = {
-							id: movie_entry.movieid,
-							title: movie_entry.title,
-							cover: "./assets/svg/no-image.svg",
-							releaseyear: parseInt(movie_entry.releaseyear),
-							releasedate: movie_entry.releasedate,
-							genre: movie_entry.genre,
-							writer: movie_entry.writer,
-							actors: movie_entry.actors,
-							directors: movie_entry.directors,
-						};
-						getImageUrl(movie);
-						return movie;
-					});
-				})
-				.then(movies => {
-					lastMoviesFetch["page"] = page;
-					lastMoviesFetch["size"] = size;
-					return toolkit.commit("setMovies", movies);
+		let request = "/movies";
+		if (toolkit.getters.searchValue !== "")
+			request += `/title/${encodeURI(toolkit.getters.searchValue).replace(/\s+/g, "+")}`;
+		request += `?page=${page}&size=${size}`;
+		if (toolkit.getters.sortingMethod === 0) request += `&sort=title`;
+		else if (toolkit.getters.sortingMethod === 1) request += `&sort=releaseyear`;
+
+		apiConnection
+			.get(request, { headers: { Authorization: `Bearer ${toolkit.getters.authToken}` } })
+			.then(response => {
+				let movie_entries = response.data;
+				return movie_entries.map(movie_entry => {
+					let movie = {
+						id: movie_entry.movieid,
+						title: movie_entry.title,
+						cover: "../assets/svg/no-image.svg",
+						releaseyear: parseInt(movie_entry.releaseyear),
+						releasedate: movie_entry.releasedate,
+						genre: movie_entry.genre,
+						writer: movie_entry.writer,
+						actors: movie_entry.actors,
+						directors: movie_entry.directors,
+					};
+					getImageUrl(movie);
+					return movie;
 				});
-		}
+			})
+			.then(movies => {
+				toolkit.dispatch("fetchMaxMoviesPages");
+				return toolkit.commit("setMovies", movies);
+			});
 	},
 	onMoviesChanged(toolkit, payload) {
 		toolkit.commit("setMovies", payload);
 	},
 	fetchActors(toolkit, args) {
-		let page = args != null && args.hasOwnProperty("page") ? args.page : null;
-		let size = args != null && args.hasOwnProperty("size") ? args.size : null;
-		if (lastActorsFetch.page !== page || lastActorsFetch.size !== size) {
-			let request = "/actors";
-			if (page !== null && size !== null) request += `?page=${page}&size=${size}`;
+		let page = (args != null && args.hasOwnProperty("page") ? args.page : toolkit.getters.currentPageNumber) - 1;
+		let size = args != null && args.hasOwnProperty("size") ? args.size : toolkit.getters.batchSize;
 
-			apiConnection
-				.get(request, { headers: { Authorization: `Bearer ${toolkit.getters.authToken}` } })
-				.then(response => {
-					let actor_entries = response.data;
-					return actor_entries.map(actor_entry => {
-						return {
-							id: actor_entry.actorid,
-							name: actor_entry.name,
-							moviecount: parseInt(actor_entry.moviecount),
-							rating: parseInt(actor_entry.ratingsum),
-							googlehits: parseInt(actor_entry.googlehits),
-							googleRating: parseInt(actor_entry.normalizedgooglerank),
-							imdbRating: parseInt(actor_entry.normalizedmovierank),
-							globalRating: parseInt(actor_entry.normalizedrating),
-						};
-					});
-				})
-				.then(actors => {
-					lastActorsFetch["page"] = page;
-					lastActorsFetch["size"] = size;
-					return toolkit.commit("setActors", actors);
+		let request = "/actors";
+		if (toolkit.getters.searchValue !== "") request += `/name/${toolkit.getters.searchValue.replace(/\s+/g, "+")}`;
+		request += `?page=${page}&size=${size}`;
+		if (toolkit.getters.sortingMethod === 0) request += `&sort=name`;
+		else if (toolkit.getters.sortingMethod === 2) request += `&sort=moviecount`;
+		else if (toolkit.getters.sortingMethod === 3) request += `&sort=ratingsum`;
+		else if (toolkit.getters.sortingMethod === 4) request += `&sort=googlehits`;
+
+		apiConnection
+			.get(request, { headers: { Authorization: `Bearer ${toolkit.getters.authToken}` } })
+			.then(response => {
+				let actor_entries = response.data;
+				return actor_entries.map(actor_entry => {
+					return {
+						id: actor_entry.actorid,
+						name: actor_entry.name,
+						moviecount: parseInt(actor_entry.moviecount),
+						rating: parseInt(actor_entry.ratingsum),
+						googlehits: parseInt(actor_entry.googlehits),
+						googleRating: parseInt(actor_entry.normalizedgooglerank),
+						imdbRating: parseInt(actor_entry.normalizedmovierank),
+						globalRating: parseInt(actor_entry.normalizedrating),
+					};
 				});
-		}
+			})
+			.then(actors => {
+				toolkit.dispatch("fetchMaxActorsPages");
+				return toolkit.commit("setActors", actors);
+			});
+	},
+	fetchMaxMoviesPages(toolkit, size = null) {
+		size = size != null ? size : toolkit.getters.batchSize;
+		let request = `/movies/maxPage/${size}`;
+		if (toolkit.getters.searchValue !== "")
+			request += `?search=${toolkit.getters.searchValue.replace(/\s+/g, "+")}`;
+		apiConnection
+			.get(request, {
+				headers: { Authorization: `Bearer ${toolkit.getters.authToken}` },
+			})
+			.then(response => {
+				return response.data;
+			})
+			.then(number => {
+				toolkit.commit(`setMaxMoviesPages`, number);
+			});
+	},
+	fetchMaxActorsPages(toolkit, size = null) {
+		size = size != null ? size : toolkit.getters.batchSize;
+		let request = `/actors/maxPage/${size}`;
+		if (toolkit.getters.searchValue !== "")
+			request += `?search=${toolkit.getters.searchValue.replace(/\s+/g, "+")}`;
+		apiConnection
+			.get(request, {
+				headers: { Authorization: `Bearer ${toolkit.getters.authToken}` },
+			})
+			.then(response => {
+				return response.data;
+			})
+			.then(number => {
+				toolkit.commit(`setMaxActorsPages`, number);
+			});
 	},
 	fetchFavorites(toolkit, _) {
 		let request = "/favorites";
@@ -615,19 +522,17 @@ export const actions = {
 			})
 			.then(toolkit.commit("removeFavorite", idFav));
 	},
-    updateFavorite(toolkit, { token , toUpdate}) {
+	updateFavorite(toolkit, { token, toUpdate }) {
 		let request = "/favorites";
 
-        return apiConnection
-            .post(request, toUpdate, {headers: {Authorization: `Bearer ${toolkit.getters.authToken}`}})
-            .then(response => {
-                return response.data;
-            })
-            .then(
-                fav => {
-                    return toolkit.commit("changeFavorite", fav);
-                }
-            );
+		return apiConnection
+			.post(request, toUpdate, { headers: { Authorization: `Bearer ${toolkit.getters.authToken}` } })
+			.then(response => {
+				return response.data;
+			})
+			.then(fav => {
+				return toolkit.commit("changeFavorite", fav);
+			});
 	},
 	onActorsChanged(toolkit, payload) {
 		toolkit.commit("setActors", payload);
@@ -648,7 +553,20 @@ export const actions = {
 		return apiConnection
 			.post("/login", payload)
 			.then(response => {
-				toolkit.commit("setAuthToken", response.data);
+				/* User is stored in `response.data.user`
+				 * Example :
+				 * {
+				 *     "token": "eyJ0eXAiOiJKV",
+				 *     "user": {
+				 *         "iduser": 0,
+				 *         "login": "MyLogin",
+				 *         "password": "hgsushgo",
+				 *         "firstname": "Hello",
+				 *         "lastname": "World"
+				 *     }
+				 * }
+				 * */
+				toolkit.commit("setAuthToken", response.data.token);
 				toolkit.commit("setUsername", payload.login);
 				return true;
 			})
@@ -694,17 +612,17 @@ export const mutations = {
 	setSortingMethod(state, payload) {
 		state.sortingMethod = payload;
 	},
-	setSortingOrder(state, payload) {
-		state.sortingOrder = payload;
-	},
 	setMovies(state, payload) {
 		state.movies = payload;
 	},
-	setTotalNumberOfMoviesWithSearch(state, payload) {
-		state.totalNumberOfMoviesWithSearch = payload;
-	},
 	setActors(state, payload) {
 		state.actors = payload;
+	},
+	setMaxMoviesPages(state, payload) {
+		state.maxMoviesPages = payload;
+	},
+	setMaxActorsPages(state, payload) {
+		state.maxActorsPages = payload;
 	},
 	setFavorites(state, payload) {
 		state.favorites = payload;
@@ -720,9 +638,9 @@ export const mutations = {
 		let index = state.favorites.findIndex(fav => fav.idfavorite === payload);
 		if (index >= 0) state.favorites.splice(index, 1);
 	},
-    changeFavorite(state, payload) {
+	changeFavorite(state, payload) {
 		let index = state.favorites.findIndex(fav => fav.idfavorite === payload);
-		state.favorites.set(index, payload)
+		state.favorites.set(index, payload);
 	},
 	setTotalNumberOfActorsWithSearch(state, payload) {
 		state.totalNumberOfActorsWithSearch = payload;
