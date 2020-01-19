@@ -30,13 +30,11 @@ export default {
 	components: { Pagination, Actor, Card },
 	created() {
 		this.$store.dispatch("fetchActors");
-		this.$store.dispatch("fetchMaxActorsPages");
 	},
 	methods: {
 		pageClicked() {
 			// Fetch new actors
 			this.$store.dispatch("fetchActors");
-			this.$store.dispatch("fetchMaxActorsPages");
 			
 			// Scroll at the top of the page
 			document.getElementById("actors").scrollIntoView({behavior: "smooth"});

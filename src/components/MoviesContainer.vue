@@ -32,7 +32,6 @@ export default {
 	created() {
         this.$store.dispatch("fetchFavorites");
         this.$store.dispatch("fetchMovies");
-		this.$store.dispatch("fetchMaxMoviesPages");
 	},
 	methods: {
 		pageClicked() {

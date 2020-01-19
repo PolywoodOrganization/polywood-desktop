@@ -380,8 +380,10 @@ export const actions = {
 		let page = (args != null && args.hasOwnProperty("page") ? args.page : toolkit.getters.currentPageNumber) - 1;
 		let size = args != null && args.hasOwnProperty("size") ? args.size : toolkit.getters.batchSize;
 
-		let request = "/movies?";
-		if (page != null && size != null) request += `page=${page}&size=${size}`;
+		let request = "/movies";
+		if (toolkit.getters.searchValue !== "")
+			request += `/title/${encodeURI(toolkit.getters.searchValue).replace(/\s+/g, "+")}`;
+		request += `?page=${page}&size=${size}`;
 		if (toolkit.getters.sortingMethod === 0) request += `&sort=title`;
 		else if (toolkit.getters.sortingMethod === 1) request += `&sort=releaseyear`;
 
@@ -406,6 +408,7 @@ export const actions = {
 				});
 			})
 			.then(movies => {
+				toolkit.dispatch("fetchMaxMoviesPages");
 				return toolkit.commit("setMovies", movies);
 			});
 	},
@@ -417,7 +420,8 @@ export const actions = {
 		let size = args != null && args.hasOwnProperty("size") ? args.size : toolkit.getters.batchSize;
 
 		let request = "/actors";
-		if (page != null && size != null) request += `?page=${page}&size=${size}`;
+		if (toolkit.getters.searchValue !== "") request += `/name/${toolkit.getters.searchValue.replace(/\s+/g, "+")}`;
+		request += `?page=${page}&size=${size}`;
 		if (toolkit.getters.sortingMethod === 0) request += `&sort=name`;
 		else if (toolkit.getters.sortingMethod === 2) request += `&sort=moviecount`;
 		else if (toolkit.getters.sortingMethod === 3) request += `&sort=ratingsum`;
@@ -441,13 +445,17 @@ export const actions = {
 				});
 			})
 			.then(actors => {
+				toolkit.dispatch("fetchMaxActorsPages");
 				return toolkit.commit("setActors", actors);
 			});
 	},
 	fetchMaxMoviesPages(toolkit, size = null) {
 		size = size != null ? size : toolkit.getters.batchSize;
+		let request = `/movies/maxPage/${size}`;
+		if (toolkit.getters.searchValue !== "")
+			request += `?search=${toolkit.getters.searchValue.replace(/\s+/g, "+")}`;
 		apiConnection
-			.get(`/movies/maxPage?size=${size}`, {
+			.get(request, {
 				headers: { Authorization: `Bearer ${toolkit.getters.authToken}` },
 			})
 			.then(response => {
@@ -459,8 +467,11 @@ export const actions = {
 	},
 	fetchMaxActorsPages(toolkit, size = null) {
 		size = size != null ? size : toolkit.getters.batchSize;
+		let request = `/actors/maxPage/${size}`;
+		if (toolkit.getters.searchValue !== "")
+			request += `?search=${toolkit.getters.searchValue.replace(/\s+/g, "+")}`;
 		apiConnection
-			.get(`/actors/maxPage?size=${size}`, {
+			.get(request, {
 				headers: { Authorization: `Bearer ${toolkit.getters.authToken}` },
 			})
 			.then(response => {
