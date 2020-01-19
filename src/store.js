@@ -77,12 +77,6 @@ export const state = {
 	 */
 	sortingMethod: 0,
 
-	/**
-	 * 0: Ascending
-	 * 1: Descending
-	 */
-	sortingOrder: 0,
-
 	movies: [],
 
 	actors: [],
@@ -188,9 +182,6 @@ export const getters = {
 	},
 	sortingMethod(state) {
 		return state.sortingMethod;
-	},
-	sortingOrder(state) {
-		return state.sortingOrder;
 	},
 	movies(state) {
 		return state.movies;
@@ -366,9 +357,6 @@ export const actions = {
 	},
 	onSortingMethodChanged(toolkit, payload) {
 		toolkit.commit("setSortingMethod", payload);
-	},
-	onSortingOrderChanged(toolkit, payload) {
-		toolkit.commit("setSortingOrder", payload);
 	},
 	/**
 	 * Fetch the movie from the database and store the result in the state.
@@ -623,9 +611,6 @@ export const mutations = {
 	},
 	setSortingMethod(state, payload) {
 		state.sortingMethod = payload;
-	},
-	setSortingOrder(state, payload) {
-		state.sortingOrder = payload;
 	},
 	setMovies(state, payload) {
 		state.movies = payload;
