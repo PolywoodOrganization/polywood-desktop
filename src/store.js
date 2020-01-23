@@ -369,8 +369,7 @@ export const actions = {
 		let size = args != null && args.hasOwnProperty("size") ? args.size : toolkit.getters.batchSize;
 
 		let request = "/movies";
-		if (toolkit.getters.searchValue !== "")
-			request += `/title/${encodeURI(toolkit.getters.searchValue).replace(/\s+/g, "+")}`;
+		if (toolkit.getters.searchValue !== "") request += `/search/${encodeURI(toolkit.getters.searchValue)}`;
 		request += `?page=${page}&size=${size}`;
 		if (toolkit.getters.sortingMethod === 0) request += `&sort=title`;
 		else if (toolkit.getters.sortingMethod === 1) request += `&sort=releaseyear`;

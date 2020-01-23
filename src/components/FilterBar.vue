@@ -27,13 +27,11 @@ export default {
 		search() {
 			// If searching through movies
 			if (this.$store.getters.navigationId === 0) {
-				console.log("Searching movies...");
 				this.$store.dispatch("fetchFavorites");
 				this.$store.dispatch("fetchMovies");
 			}
 			// If searching through actors
 			else if (this.$store.getters.navigationId === 1) {
-				console.log("Searching actors...");
 				this.$store.dispatch("fetchActors");
 			}
 		},

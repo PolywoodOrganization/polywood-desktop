@@ -71,8 +71,10 @@ export default {
 	},
 	methods: {
 		onGenreClicked(g) {
-			if (g !== undefined)
+			if (g !== undefined) {
 				this.$store.dispatch("onSearchValueChanged", g);
+				this.$store.dispatch("fetchMovies");
+			}
 		},
         addToFavorite(){
             let favToAdd = {
