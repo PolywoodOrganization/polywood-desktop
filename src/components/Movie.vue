@@ -3,7 +3,7 @@
 		<p class="card-text"><b>Genre :</b> <Badge v-for="g in parseGenre" @onBadgeClicked="onGenreClicked" :title="g" :label-color="getGenreColorType(g)" :key="g"/></p>
 		<p class="card-text"><b>Sortie :</b> {{releaseyear}}</p>
 		<p class="card-text"><b>Acteurs :</b> <span v-html="parseActors"></span></p>
-		<p class="card-text"><b>Directeurs :</b> <span v-for="director in directorsArray" v-bind:key="director">{{director}}<button title="Voir ses réalisations" @click="onDirectorClicked(director)" class="bg-transparent border-0">🎥</button></span></p>
+		<p class="card-text"><b>Directeurs :</b> <span v-for="director in directorsArray" v-bind:key="director">{{director}}</span></p>
 		<button v-if="this.displayCastingButton" class="btn btn-primary" @click="onCastingClicked">Voir casting</button>
         <br>
         <button v-if="this.displayDirectorButton" class="btn btn-secondary" @click="onDirectorsClicked">Du même directeur</button>
@@ -71,12 +71,10 @@ export default {
 	},
 	methods: {
 		onGenreClicked(g) {
-			if (g !== undefined)
+			if (g !== undefined) {
 				this.$store.dispatch("onSearchValueChanged", g);
-		},
-        onDirectorClicked(g) {
-			if (g !== undefined)
-				this.$store.dispatch("onSearchValueChanged", g);
+				this.$store.dispatch("fetchMovies");
+			}
 		},
         addToFavorite(){
             let favToAdd = {
