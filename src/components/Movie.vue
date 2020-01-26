@@ -7,8 +7,8 @@
 		<button v-if="this.displayCastingButton" class="btn btn-primary" @click="onCastingClicked">Voir casting</button>
         <br>
         <button v-if="this.displayDirectorButton" class="btn btn-secondary" @click="onDirectorsClicked">Du même directeur</button>
-		<button class="fav-heart" v-if="isUserFavorite" @click="removeFromFavorites">❤️</button>
-		<button class="fav-heart" v-else  @click="addToFavorite">❤</button>
+		<button class="fav-heart" v-if="isUserFavorite" @click="removeFromFavorites"><img src="../assets/img/full_heart.png" alt="Click to remove it from your favorite movies"/></button>
+		<button class="fav-heart" v-else  @click="addToFavorite"><img src="../assets/img/empty_heart.png" alt="Click to add it to your favorite movies"/></button>
 	</Card>
 	<Card v-else additional-card-class="border-warning bg-warning empty-movie col-lg-3 col-md-2">
 		<img src="../assets/img/clapper.png" alt="Aucun film disponible" title="Aucun film disponible"/>
@@ -172,11 +172,14 @@ export default {
     right: 0;
 	background-color: transparent;
 	border: none;
-}
-
-	
-	.card-movie:hover{
-		transform: translateY(-5px) scale(1.005) translateZ(0);
-		box-shadow: 0 24px 36px rgba(0,0,0,0.11);
+	img {
+		width: 20px !important;
+		height: 20px !important;
 	}
+}
+	
+.card-movie:hover{
+	transform: translateY(-5px) scale(1.005) translateZ(0);
+	box-shadow: 0 24px 36px rgba(0,0,0,0.11);
+}
 </style>
